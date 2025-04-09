@@ -1,0 +1,26 @@
+services:
+  codeserver:
+    mem_limit: 1g
+    image: lscr.io/linuxserver/code-server:latest
+    restart: unless-stopped
+    networks:
+      ts_net:
+        ipv4_address: ${CODESERVER_IP}
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=${TS_TIME_ZONE}
+      - PASSWORD=${CODESERVER_PASSWORD} #optional
+      - HASHED_PASSWORD=${CODESERVER_HASHED_PASSWORD} #optional
+      - SUDO_PASSWORD=${CODESERVER_SUDO_PASSWORD} #optional
+      - SUDO_PASSWORD_HASH=${CODESERVER_SUDO_PASSWORD_HASH} #optional
+      - PROXY_DOMAIN=${CODESERVER_PROXY_DOMAIN} #optional
+      - DEFAULT_WORKSPACE=${CODESERVER_DEFAULT_WORKSPACE} #optional
+    volumes:
+      - ${@ROOT}:/tsapp/
+      - ${@APPDATA}:/config/
+      - ${@PACKAGE}/bin/codeserver.sh:/init
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/bin/docker:/usr/bin/docker/
+    ports:
+      - ${CODESERVER_PORT}:8443

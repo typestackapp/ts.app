@@ -1,0 +1,34 @@
+FROM node:22.2.0
+
+# install google chrome
+RUN echo 'install google chrome for puppeteer'; \
+    apt-get update && apt-get install gnupg wget -y; \
+    wget --quiet --output-document=- https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor > /etc/apt/trusted.gpg.d/google-archive.gpg; \
+    sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'; \
+    apt-get update; \
+    apt-get install google-chrome-stable -y --no-install-recommends; \
+    rm -rf /var/lib/apt/lists/*;
+
+# install git
+RUN echo 'install git'; \
+    apt-get update && apt-get install git -y;
+
+# install pm2
+RUN npm install -g pm2@5.4.3
+
+# upgrade npm to 10.9.1, fixes install freezes https://github.com/npm/cli/issues/7814
+RUN npm install -g npm@10.9.1
+
+WORKDIR /tsapp
+
+# create package.json file with {"workspaces": ["packages/*"]}
+RUN echo '{"workspaces": ["packages/*"]}' > package.json
+
+# install @ts.app/core # DEBUG: --loglevel silly
+RUN npm install @ts.app/core@${@VERSION} --omit=dev --prefer-offline --no-audit --progress=false
+
+RUN cd /tsapp/node_modules/@ts.app/core ; \
+    npm link ./ ; 
+
+RUN chmod +x /tsapp/node_modules/@ts.app/core/bin/tsapp.sh
+ENTRYPOINT ["/tsapp/node_modules/@ts.app/core/bin/tsapp.sh"]

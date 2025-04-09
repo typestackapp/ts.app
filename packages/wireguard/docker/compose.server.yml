@@ -1,0 +1,23 @@
+services:
+  ${@NAMETAG}_server:
+    image: linuxserver/wireguard
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=UTC
+      - SERVERURL=${WIREGUARD_SERVERURL}
+      - PEERS=${WIREGUARD_PEERS}
+      - ALLOWEDIPS=${WIREGUARD_ALLOWEDIPS}
+      - PEERDNS=${WIREGUARD_PEERDNS}
+      - INTERNAL_SUBNET=${WIREGUARD_INTERNAL_SUBNET}
+    volumes:
+      - ../packages/${@ALIAS}/configs/wireguard/servers/${@NAMETAG}:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - ${WIREGUARD_PORT}:51820/udp
+    sysctls:
+      - net.ipv4.conf.all.src_valid_mark=1

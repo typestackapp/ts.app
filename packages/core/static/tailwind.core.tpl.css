@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 47.4% 11.2%;
+ 
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+ 
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+ 
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+ 
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+ 
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+ 
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+ 
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+ 
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --ring: 215 20.2% 65.1%;
+ 
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+ 
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+ 
+    --accent: 216 34% 17%;
+    --accent-foreground: 210 40% 98%;
+ 
+    --popover: 224 71% 4%;
+    --popover-foreground: 215 20.2% 65.1%;
+ 
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+ 
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+ 
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 1.2%;
+ 
+    --secondary: 222.2 47.4% 11.2%;
+    --secondary-foreground: 210 40% 98%;
+ 
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
+ 
+    --ring: 216 34% 17%;
+ 
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  font: 15px/1 "Open Sans", sans-serif;
+  color: #777;
+}
+
+main {
+  flex: 1;
+  background: #f5f5f5;
+}
+
+main h1 {
+  height: 80px;
+  padding: 0 25px;
+  line-height: 76px;
+  font-size: 24px;
+  font-weight: 400;
+  background: #ddd;
+}
+
+.flex-grid {
+  display: flex;
+}
+
+.flex-grid > div {
+  flex: 1;
+  margin: 5px;
+  padding: 10px;
+  background: #fff;
+}
+
+.flex-grid > div:last-child {
+  margin-right: 0;
+}
+
+.flex-grid h2 {
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.flex-grid li {
+  position: relative;
+  margin: 0 0 10px;
+  padding: 0 0 0 0px;
+}
+
+.flex-grid li:before {
+  content: "\f00c";
+  font: normal 16px fontawesome;
+  top: 0;
+  left: 0;
+  color: #999;
+}
+
+/*
+  ** Media Queries
+  ***********************************************************/
+
+@media (max-width: 1000px) {
+  .flex-grid {
+    flex-direction: column;
+  }
+
+  .flex-grid > div {
+    margin-right: 0;
+  }
+}

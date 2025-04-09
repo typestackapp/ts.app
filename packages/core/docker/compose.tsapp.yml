@@ -1,0 +1,98 @@
+services:
+  tsapp:
+    depends_on:
+      - mongo
+      - rabbitmq
+      - certbot
+      - haproxy
+    image: typestackapp/ts.app:${@VERSION}
+    restart: always
+    env_file: ${@DEFAULT}
+    networks:
+      default:
+      ts_net:
+        ipv4_address: ${TS_IP}
+    volumes: ${TS_VOLUME}
+    ports:
+      - "${TS_NEXT_PORT}:80"       # HTTP NEXT
+      - "${TS_API_PORT}:8000"      # HTTP API
+      - "${TS_GRAPHQL_PORT}:8002"  # HTTP GRAPHQL
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_NAME: ${MONGO_INITDB_NAME}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_KEY_PATH: ${MONGO_KEY_PATH}
+      MONGO_BIND_IP: ${MONGO_BIND_IP}
+      MONGO_DB_PATH: ${MONGO_DB_PATH}
+    networks:
+      ts_net:
+        ipv4_address: ${MONGO_IP}
+    volumes:
+      - mongo-db:/data/db/
+      - ${@PACKAGE}/bin/:/scripts/
+      - ${@APPDATA}/configs/mongo/:/configs/mongo/
+    entrypoint: /scripts/mongo.sh
+    ports:
+      - ${MONGO_PORT}:27017 # Expose DB for host
+
+  rabbitmq:
+    image: rabbitmq:3.9-management
+    restart: always
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    networks:
+      ts_net:
+        ipv4_address: ${RABBITMQ_IP}
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq/
+      - rabbitmq:/var/log/rabbitmq/
+
+  certbot:
+    image: certbot/certbot:latest
+    restart: always
+    environment:
+      - TS_DOMAIN_NAME=${TS_DOMAIN_NAME}
+      - CERTBOT_SELFSIGNED=${CERTBOT_SELFSIGNED}
+      - CERTBOT_INIT=${CERTBOT_INIT}
+      - CERTBOT_EXTRA_DOMAIN_NAMES=${CERTBOT_EXTRA_DOMAIN_NAMES}
+      - CERTBOT_RESTART_TIME=${CERTBOT_RESTART_TIME}
+      - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+    networks:
+      ts_net:
+        ipv4_address: ${CERTBOT_IP}
+    volumes:
+      - ${@APPDATA}/../../certbot/nginx.conf:/etc/nginx/nginx.conf
+      - ${@APPDATA}/configs/haproxy/wk/:/var/www/wk/
+      - ${@APPDATA}/configs/haproxy/ssl/:/home/ssl/
+      - ${@APPDATA}/configs/letsencrypt/:/etc/letsencrypt/
+      - ${@APPDATA}/logs/certbot/:/etc/nginx/logs/
+      - ${@APPDATA}/logs/letsencrypt/:/var/log/letsencrypt/
+      - ${@PACKAGE}/bin/certbot.sh:/home/scripts/certbot.sh
+    entrypoint: /home/scripts/certbot.sh
+    ports:
+      - "${CERTBOT_PORT}:80" # CERTBOT HTTP
+
+  haproxy:
+    depends_on:
+      - certbot
+    mem_limit: 3g
+    image: haproxy:2.9.6
+    restart: always
+    user: root
+    env_file: ${@DEFAULT}
+    networks:
+      default:
+      ts_net:
+        ipv4_address: ${HAPROXY_IP}
+    volumes:
+      - ${@APPDATA}/../../haproxy/proxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+      - ${@APPDATA}/logs/haproxy/:/var/log/
+      - ${@APPDATA}/configs/haproxy/ssl/:/home/ssl/
+      - ${@PACKAGE}/bin/haproxy.sh:/home/scripts/haproxy.sh
+    entrypoint: /home/scripts/haproxy.sh
+    ports: ${HAPROXY_PORT}

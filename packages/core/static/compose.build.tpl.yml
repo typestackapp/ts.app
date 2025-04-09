@@ -1,0 +1,5 @@
+version: '3.3'
+services:
+  tsbuild:
+    image: node:22.2.0
+    volumes: ../../:/ts

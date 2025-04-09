@@ -1,0 +1,6 @@
+services:
+  tsapp:
+    image: typestackapp/ts.app:${@VERSION}
+    build:
+      context: ./
+      dockerfile: ./Dockerfile.${@ALIAS}.tsapp
