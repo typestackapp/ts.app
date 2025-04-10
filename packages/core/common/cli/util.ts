@@ -386,7 +386,12 @@ export async function prepareDockerFile(global_compose_file: Buffer | string | u
     docker_compose_file = (global_compose_file || "") + "\r" + docker_compose_file
     
     // replace file env variables
-    const docker_compose_file_new = docker_compose_file.replace(/\$\{([^}]*)\}/g, function(match, name) {
+    const docker_compose_file_new = docker_compose_file.replace(/(\$*)\$\{([^}]+)\}/g, function(match, dollars, name) {
+        if (dollars.length === 1) {
+            // Escaped variable, reduce $$ to single $
+            return dollars.slice(0, dollars.length - 1) + `\${${name}}`
+        }
+    
         const replace_with = env_vars[name]
         if(replace_with == undefined) {
             console.warn(`Missing env: ${env_name}, var: ${name}, in: ${file.split('/').pop()}`)

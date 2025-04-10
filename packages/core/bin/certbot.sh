@@ -35,21 +35,8 @@ trap exit TERM
 # RENEW CERTBOT CERTS
 while true
 do  
-    # initialize certbot on first run
-    if [ "$CERTBOT_INIT" = "true" ]; then
-        INIT="true"
-        echo "initializing certbot"
-        eval "certbot certonly --webroot --debug-challenges --webroot-path /var/www/wk/ ${DOMAINS} ${EMAIL} --agree-tos --force-renewal --non-interactive"
-    fi
 
-    # renew certs with certbot
-    if [ "$CERTBOT_SELFSIGNED" = "false" ]; then
-        eval "certbot renew"
-        eval "install -c -m 777 ${CHAIN}"
-        eval "install -c -m 777 ${KEY}"
-    fi
-
-    # create folder for self signed certs
+    # create cert folder if not exist
     if [ ! -d /home/ssl/${SERVER} ]; then
         mkdir -p /home/ssl/${SERVER}
     fi
@@ -70,6 +57,27 @@ do
             fi
             openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /home/ssl/${SERVER}/privkey.pem -out /home/ssl/${SERVER}/fullchain.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=${SERVER}"
         fi
+    fi
+
+    # renew or init certs with certbot
+    if [ "$CERTBOT_SELFSIGNED" = "false" ]; then
+    
+        # check if certs exists if not set CERTBOT_INIT to true
+        if [ ! -f /home/ssl/${SERVER}/fullchain.pem ]; then
+            echo "certs not found, setting CERTBOT_INIT to true"
+            CERTBOT_INIT="true"
+        fi
+
+        # initialize certbot on first run
+        if [ "$CERTBOT_INIT" = "true" ]; then
+            INIT="true"
+            echo "initializing certbot"
+            eval "certbot certonly --webroot --debug-challenges --webroot-path /var/www/wk/ ${DOMAINS} ${EMAIL} --agree-tos --force-renewal --non-interactive"
+        fi
+
+        eval "certbot renew"
+        eval "install -c -m 777 ${CHAIN}"
+        eval "install -c -m 777 ${KEY}"
     fi
 
     # if cert.pem file exists remove it

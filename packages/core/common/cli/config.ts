@@ -127,6 +127,13 @@ export const config = async (options: ConfigOptions) => {
         }catch (error) {
             if(fs.existsSync(`${cwd.node_modules}/${pack_name}/configs/env.js`)) {
                 console.error(chalk.red(`Error while loading env vars in packages/${pack_alias} error: ${error}`))
+            }else{
+                console.warn(chalk.yellow(`Warning: No env module found for ${pack_name}`))
+                env_modules.push({
+                    key: pack_name,
+                    pack: pack,
+                    mod: {}
+                })
             }
         }
     }
