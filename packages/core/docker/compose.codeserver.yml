@@ -1,7 +1,7 @@
 services:
   codeserver:
     mem_limit: 1g
-    image: lscr.io/linuxserver/code-server:latest
+    image: lscr.io/linuxserver/code-server:4.89.1
     restart: unless-stopped
     networks:
       ts_net:
@@ -19,8 +19,9 @@ services:
     volumes:
       - ${@ROOT}:/tsapp/
       - ${@APPDATA}:/config/
-      - ${@PACKAGE}/bin/codeserver.sh:/init
+      - ${@PACKAGE}/bin/codeserver.sh:/init-new
       - /var/run/docker.sock:/var/run/docker.sock
       - /usr/bin/docker:/usr/bin/docker/
     ports:
       - ${CODESERVER_PORT}:8443
+    entrypoint: ["/init-new"]

@@ -11,6 +11,7 @@ import path from 'path'
 import moment from 'moment'
 import { TypeStack, CWD, TypeStackPackageWithAlias as Package } from '@ts.app/core/common/cli/typestack.js'
 import chalk from 'chalk'
+import { trackAllowedDynamicAccess } from 'next/dist/server/app-render/dynamic-rendering'
 
 const exec = child_process.execSync
 
@@ -186,10 +187,16 @@ export const config = async (options: ConfigOptions) => {
         docker_template_files[pack_name] = {}
         for(const docker_file of docker_files) {
             const docker_file_path = `${docker_folder}/${docker_file}`
-            docker_template_files[pack_name][docker_file] = {
-                input_file_name: docker_file,
-                output_file_name: getOutputFileName(docker_file, [pack.alias]),
-                content: fs.readFileSync(docker_file_path, 'utf8')
+            try {
+                docker_template_files[pack_name][docker_file] = {
+                    input_file_name: docker_file,
+                    output_file_name: getOutputFileName(docker_file, [pack.alias]),
+                    content: fs.readFileSync(docker_file_path, 'utf8')
+                }
+            }
+            catch (error) {
+                console.error(chalk.red(`Error: Could not read file ${docker_file_path}`))
+                continue
             }
         }
     }
