@@ -7,8 +7,10 @@ CERTBOT_INIT=${CERTBOT_INIT:-"true"}
 EMAIL="-m ${CERTBOT_EMAIL}"
 SERVER=${TS_DOMAIN_NAME}
 CERTBOT_SELFSIGNED=${CERTBOT_SELFSIGNED:-"false"}
-CHAIN="/etc/letsencrypt/live/${SERVER}/fullchain.pem /home/ssl/${SERVER}/fullchain.pem"
-KEY="/etc/letsencrypt/live/${SERVER}/privkey.pem /home/ssl/${SERVER}/privkey.pem"
+CHAIN_SOURCE="/etc/letsencrypt/live/${SERVER}/fullchain.pem"
+CHAIN_DST="/home/ssl/${SERVER}/fullchain.pem"
+KEY_SOURCE="/etc/letsencrypt/live/${SERVER}/privkey.pem"
+KEY_DST="/home/ssl/${SERVER}/privkey.pem"
 
 # if CERTBOT_EXTRA_DOMAIN_NAMES = string: "undefined" or "" then set to empty string
 EXTRA_DOMAIN_NAMES=${CERTBOT_EXTRA_DOMAIN_NAMES:-""}
@@ -44,18 +46,18 @@ do
     # create self signed certificate
     if [ "$CERTBOT_SELFSIGNED" = "true" ]; then
         # check if certs are expired
-        if openssl x509 -checkend 86400 -noout -in /home/ssl/${SERVER}/fullchain.pem; then
+        if openssl x509 -checkend 86400 -noout -in ${CHAIN_DST}; then
             echo "Certificate will not expire - Using existing self signed certificate SERVER=$SERVER"
         else
             echo "generating new certs, certs are expired or not found"
             # remove old certs if exist
-            if [ -f /home/ssl/${SERVER}/fullchain.pem ]; then
-                rm /home/ssl/${SERVER}/fullchain.pem
+            if [ -f ${CHAIN_DST} ]; then
+                rm ${CHAIN_DST}
             fi
-            if [ -f /home/ssl/${SERVER}/privkey.pem ]; then
-                rm /home/ssl/${SERVER}/privkey.pem
+            if [ -f ${KEY_DST} ]; then
+                rm ${KEY_DST}
             fi
-            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /home/ssl/${SERVER}/privkey.pem -out /home/ssl/${SERVER}/fullchain.pem -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=${SERVER}"
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEY_DST} -out ${CHAIN_DST} -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=${SERVER}"
         fi
     fi
 
@@ -63,19 +65,19 @@ do
     if [ "$CERTBOT_SELFSIGNED" = "false" ]; then
     
         # check if certs exists if not set CERTBOT_INIT to true
-        if [ ! -f /home/ssl/${SERVER}/fullchain.pem ]; then
+        if [ ! -f ${CHAIN_DST} ]; then
             echo "certs not found, setting CERTBOT_INIT to true"
             CERTBOT_INIT="true"
         fi
 
         # check if chain files exist otherwise set CERTBOT_INIT to true
-        if [ ! -f ${CHAIN} ]; then
+        if [ ! -f ${CHAIN_SOURCE} ]; then
             echo "chain file not found, setting CERTBOT_INIT to true"
             CERTBOT_INIT="true"
         fi
 
         # check if key file exists otherwise set CERTBOT_INIT to true
-        if [ ! -f ${KEY} ]; then
+        if [ ! -f ${KEY_SOURCE} ]; then
             echo "key file not found, setting CERTBOT_INIT to true"
             CERTBOT_INIT="true"
         fi
@@ -88,8 +90,8 @@ do
         fi
 
         eval "certbot renew"
-        eval "install -c -m 777 ${CHAIN}"
-        eval "install -c -m 777 ${KEY}"
+        eval "install -c -m 777 ${CHAIN_SOURCE} ${CHAIN_DST}"
+        eval "install -c -m 777 ${KEY_SOURCE} ${KEY_DST}"
     fi
 
     # if cert.pem file exists remove it
@@ -98,7 +100,7 @@ do
     fi
 
     # combine fullchain and privkey into cert.pem
-    cat /home/ssl/${SERVER}/fullchain.pem /home/ssl/${SERVER}/privkey.pem > /home/ssl/${SERVER}/cert.pem
+    cat ${CHAIN_DST} ${KEY_DST} > /home/ssl/${SERVER}/cert.pem
 
     sleep $CERTBOT_RESTART_TIME 
 done
