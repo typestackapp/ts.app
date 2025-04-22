@@ -68,6 +68,18 @@ do
             CERTBOT_INIT="true"
         fi
 
+        # check if chain files exist otherwise set CERTBOT_INIT to true
+        if [ ! -f ${CHAIN} ]; then
+            echo "chain file not found, setting CERTBOT_INIT to true"
+            CERTBOT_INIT="true"
+        fi
+
+        # check if key file exists otherwise set CERTBOT_INIT to true
+        if [ ! -f ${KEY} ]; then
+            echo "key file not found, setting CERTBOT_INIT to true"
+            CERTBOT_INIT="true"
+        fi
+
         # initialize certbot on first run
         if [ "$CERTBOT_INIT" = "true" ]; then
             INIT="true"
