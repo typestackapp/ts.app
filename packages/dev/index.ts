@@ -1,4 +1,4 @@
-import packagejson from "@ts.app/dev/package.json" assert { type: "json" }
+import packagejson from "@ts.app/dev/package.json" with { type: "json" }
 import access from "@ts.app/dev/configs/access.js"
 import graphql from "@ts.app/dev/configs/graphql.js"
 import tailwind from "@ts.app/dev/configs/tailwind.js"

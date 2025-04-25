@@ -1,4 +1,4 @@
-import packagejson from "@ts.app/core/package.json" assert { type: "json" }
+import packagejson from "@ts.app/core/package.json" with { type: "json" }
 import access from "@ts.app/core/configs/access.js"
 import countrys from "@ts.app/core/configs/countrys.js"
 import db from "@ts.app/core/configs/db.js"

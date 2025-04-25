@@ -1,28 +1,28 @@
 ### Prerequisites
 
 - **Docker**: >27.4.0
-- **Node.js**: >18.20
+- **Node.js**: >20.19.1
 
 
 ### Configure and build
 ```bash
 git clone https://github.com/typestackapp/ts.app.git
-cd ts
+cd ts.app
 npm install
 npm run build --workspaces --if-present
-npm link ./packages/cli
-ts init
-ts config --link=0
+npm link ./packages/core
+cd ./packages/dev
+ts config
 ```
 
 ###  Start docker containers
 ```bash
-docker-compose -f ./docker-dev/compose.core.ts.yml up -d
+docker-compose -f ./appdata/compose/compose.core.tsapp.yml up -d
 ```
 
 ### Update and restart services
 ```bash
-docker-compose -f ./docker-dev/compose.core.ts.yml exec ts /bin/bash
+docker-compose -f ./appdata/compose/compose.core.tsapp.yml exec tsapp /bin/bash
 cd /ts
 ts update
 pm2 ls
