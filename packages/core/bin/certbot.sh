@@ -82,15 +82,17 @@ do
             CERTBOT_INIT="true"
         fi
 
-        # Get currently issued domains (if cert exists)
+        # Get currently issued domains from cert
         EXISTING_DOMAINS=""
         if [ -f "${CHAIN_SOURCE}" ]; then
-            EXISTING_DOMAINS=$(openssl x509 -in ${CHAIN_SOURCE} -noout -text | grep DNS: | sed 's/DNS://g' | tr -d ' ' | tr ',' '\n' | sort)
-            REQUESTED_DOMAINS=$(echo "${TS_DOMAIN_NAME} ${EXTRA_DOMAIN_NAMES}" | tr ' ' '\n' | sort)
-            
+            EXISTING_DOMAINS=$(openssl x509 -in ${CHAIN_SOURCE} -noout -text | grep DNS: | sed 's/DNS://g' | tr -d ' ' | tr ',' '\n' | sort | uniq)
+            REQUESTED_DOMAINS=$(echo "${TS_DOMAIN_NAME} ${CERTBOT_EXTRA_DOMAIN_NAMES}" | tr ' ' '\n' | sort | uniq)
+
             if [ "$EXISTING_DOMAINS" != "$REQUESTED_DOMAINS" ]; then
                 echo "Domain list changed. Forcing certbot to issue new certificate with updated domains."
                 CERTBOT_INIT="true"
+            else
+                echo "Domain list unchanged. No need to force renewal."
             fi
         fi
 
