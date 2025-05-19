@@ -1,7 +1,7 @@
 import moment from 'moment'
 import cookie from 'cookie'
 import { Types } from 'mongoose'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import { z } from "zod"
 import * as trpcExpress from '@trpc/server/adapters/express'
 import { initTRPC, inferAsyncReturnType, inferRouterInputs, inferRouterOutputs } from "@trpc/server"
@@ -19,7 +19,7 @@ import tscore, { ExpressErrorResponse, ExpressResponse, ExpressRouter } from "@t
 
 const config = tscore.config
 const t = initTRPC.context<Context>().create()
-const createContext = ({req, res}: trpcExpress.CreateExpressContextOptions) => ({req,res})
+export const createContext = ({ req, res }): { req: Request, res: Response } => ({ req, res });
 
 export type Context = inferAsyncReturnType<typeof createContext>
 export type AuthRouter = typeof authRouter

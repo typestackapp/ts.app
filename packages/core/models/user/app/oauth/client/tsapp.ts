@@ -1,11 +1,11 @@
 import moment from "moment"
-import { CreateTRPCClientOptions, CreateTRPCProxyClient, HTTPHeaders, createTRPCProxyClient, httpBatchLink } from '@trpc/client'
+import { CreateTRPCClientOptions, TRPCClient, createTRPCClient, HTTPHeaders, httpBatchLink } from '@trpc/client'
 import { AuthUrlOptions, CallbackOptions, Client, ClientOptions, ClientSession, GetTokenOptions } from "@ts.app/core/models/user/app/oauth/client.js"
 import type { AuthInput, AuthOutput, AuthRouter } from "@ts.app/core/express/auth.js"
 import { GraphqlClients, getGraphqlClients } from "@ts.app/core/codegen/graphql.js"
 
 export default class TSAppClient extends Client {
-    readonly auth: CreateTRPCProxyClient<AuthRouter> // auth trpc client
+    readonly auth: TRPCClient<AuthRouter> // auth trpc client
     readonly graphql: GraphqlClients // tsapp graphql clients
     options: ClientOptions
     session: ClientSession
@@ -32,7 +32,7 @@ export default class TSAppClient extends Client {
         }
     }
 
-    private getAuthClient(headers?: HTTPHeaders): CreateTRPCProxyClient<AuthRouter> {
+    private getAuthClient(headers?: HTTPHeaders): TRPCClient<AuthRouter> {
         const client: CreateTRPCClientOptions<AuthRouter> = {
             links: [
                 httpBatchLink({
@@ -44,7 +44,7 @@ export default class TSAppClient extends Client {
                 })
             ]
         } as any
-        return createTRPCProxyClient(client)
+        return createTRPCClient(client)
     }
 
     getCurrentSession(): ClientSession | false {

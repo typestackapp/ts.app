@@ -2,7 +2,8 @@ import { tsapp } from "@ts.app/core/configs/env.js"
 import { ApolloServer } from '@apollo/server'
 import type { WithRequired } from '@apollo/utils.withrequired';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
-import { ExpressMiddlewareOptions, expressMiddleware } from '@apollo/server/express4'
+import { ExpressMiddlewareOptions, expressMiddleware } from '@as-integrations/express5';
+
 import depthLimit from 'graphql-depth-limit'
 import cors from 'cors'
 
@@ -13,13 +14,13 @@ import mongoose from "mongoose"
 import { TSAppGraphqlPlugin, IGraphqlRouter, GraphqlContext } from '@ts.app/core/common/service.js'
 import { getGraphqlModules, getGraphqlRouterConfigs } from '@ts.app/core/common/cli/util.js'
 import type { AccessRequest } from '@ts.app/core/models/user/access/middleware.js'
-import express, { Response } from "express"
+import express, { Router } from "express"
 import { TypeStack, GraphqlServerOutput } from "@ts.app/core"
 import http from "http"
 
 export async function graphqlLoader(server: http.Server) {
     const { applyMiddlewareToGraphqlModule, validateUserToken } = await import('@ts.app/core/models/user/access/middleware.js')
-    const router = express.Router()
+    const router: Router = express.Router()
     const docs: IGraphqlRouter[] = []
 
     function getTSAppGraphqlPlugin(options: GraphqlServerOutput): TSAppGraphqlPlugin {

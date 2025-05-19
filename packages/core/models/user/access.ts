@@ -4,8 +4,7 @@ import { IAccessDocument, IServerAccess, IAccessOptions } from '@ts.app/core'
 import { Request, Response, NextFunction } from "express"
 import tscore from "@ts.app/core"
 import { CaptchaResponse } from "@ts.app/core/models/user/access/middleware.js"
-import { Serialize } from "@trpc/server/shared"
-
+import { Serialize } from "@trpc/server/unstable-core-do-not-import"
 export type { Request, Response, NextFunction }
 
 export type AccessInput = IAccessInput

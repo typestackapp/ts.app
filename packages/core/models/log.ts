@@ -1,4 +1,4 @@
-import { Schema, Document, Model, Types, FilterQuery } from "mongoose"
+import { Schema, Document, Model, Types, FlattenMaps } from "mongoose"
 import tscore, { type ILogOptionsDocument, type ILogOptionsInput } from "@ts.app/core"
 import type { MongooseDocument } from "@ts.app/core/models/util.js"
 
@@ -22,7 +22,7 @@ export const logOptionsSchema = new Schema<LogOptionsDocument, Model<LogOptionsD
 },{ _id: false })
 
 export type LogInput = {
-    doc: MongooseDocument
+    doc: FlattenMaps<MongooseDocument>
 }
 
 export interface LogDocument extends LogInput {

@@ -2,7 +2,7 @@ import { accessSchema } from "@ts.app/core/models/user/access.js"
 import { IAccessInput } from "@ts.app/core/codegen/admin/index.js"
 import { TokenDefaults, TokenDocument, TokenInput, TokenModel } from "@ts.app/core/models/user/token.js"
 import { Schema, Model } from 'mongoose'
-import { Serialize } from "@trpc/server/shared"
+import { Serialize } from "@trpc/server/unstable-core-do-not-import"
 
 export const pack = "@ts.app/core"
 export const type = "UserApiKeyToken"

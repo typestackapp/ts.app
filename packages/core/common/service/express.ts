@@ -1,14 +1,14 @@
 import { TypeStack, ExpressRouter, ExpressResponse, IExpressRouter } from "@ts.app/core"
 import { tsapp } from "@ts.app/core/configs/env.js"
 import fs from "fs"
-import express from "express"
+import express, { Router } from "express"
 import http from "http"
 
 
 export async function expressLoader(server: http.Server) {
     const { middleware } = await import("@ts.app/core/models/user/access/middleware.js")
 
-    const router = express.Router()
+    const router: Router = express.Router()
     const docs: Map<string, IExpressRouter[]> = new Map()
 
     for (const [pack_alias, pack] of Object.entries(TypeStack.config.packages)) {

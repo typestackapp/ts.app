@@ -1,6 +1,5 @@
 "use client"
 import { Dispatch, SetStateAction, createContext} from 'react'
-import frontend from '@ts.app/core/codegen/config/source/@ts.app/core/frontend.public.json'
 import TSAppClient from '@ts.app/core/models/user/app/oauth/client/tsapp.js'
 import type { ClientSession } from '@ts.app/core/models/user/app/oauth/client.js'
 import type { AdminApp } from '@ts.app/core/components/util.js'
@@ -16,11 +15,10 @@ export type Apps = {
 }
 
 export abstract class IGlobalContext {
-    abstract readonly config: typeof frontend
     abstract readonly tsappClient: TSAppClient
 
     apps: Apps | undefined
-    app_filter: string
+    app_filter: string = ''
 
     get session(): Session | undefined {
         return this.session
@@ -33,8 +31,9 @@ export abstract class IGlobalContext {
 }
 
 export const context = createContext<IGlobalContext>({
-    tsappClient: new TSAppClient(frontend),
-    config: frontend,
+    tsappClient: new TSAppClient({
+        client_id: 'TODO', // TODO - set client id
+    }),
     session: undefined,
     apps: undefined,
     app_filter: '',

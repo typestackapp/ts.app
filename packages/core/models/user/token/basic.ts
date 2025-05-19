@@ -1,5 +1,5 @@
 import { TokenDefaults, TokenInput } from "@ts.app/core/models/user/token.js"
-import { Serialize } from "@trpc/server/shared"
+import { Serialize } from "@trpc/server/unstable-core-do-not-import"
 
 export const pack = "@ts.app/core"
 export const type = "BasicToken"

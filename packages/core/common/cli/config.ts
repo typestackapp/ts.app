@@ -537,7 +537,7 @@ export const config = async (options: ConfigOptions) => {
                     if(${isPublic}){
                         return headers
                     } else {
-                        const auth_headers = await tsappClient.getAuthHeaders()
+                        const auth_headers = await tsc.getAuthHeaders()
                         return {
                             headers: {
                                 ...headers,
@@ -555,8 +555,8 @@ export const config = async (options: ConfigOptions) => {
     const graphql_file = `
         import { ApolloClient, createHttpLink, InMemoryCache } from "@apollo/client"
         import { setContext } from '@apollo/client/link/context'
-        import tsappClient from "@ts.app/core/models/user/app/oauth/client/tsapp.js"
-        export function getGraphqlClients(tsc: tsappClient) {
+        import TSAppClient from "@ts.app/core/models/user/app/oauth/client/tsapp.js"
+        export function getGraphqlClients(tsc: TSAppClient) {
             return {
                 {services}
             }

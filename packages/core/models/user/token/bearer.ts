@@ -2,7 +2,7 @@ import { accessSchema } from "@ts.app/core/models/user/access.js"
 import { IAccessInput } from "@ts.app/core/codegen/admin/index.js"
 import { TokenDefaults, TokenDocument, TokenInput, TokenModel } from "@ts.app/core/models/user/token.js"
 import { Schema, Model, Types } from 'mongoose'
-import { Serialize } from "@trpc/server/shared"
+import { Serialize } from "@trpc/server/unstable-core-do-not-import"
 import { GrantType, OauthAppModel } from "@ts.app/core/models/user/app/oauth.js"
 import { BearerToken, Token } from "@ts.app/core/models/user/util.js"
 

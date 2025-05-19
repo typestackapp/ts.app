@@ -1,6 +1,6 @@
-import { Serialize } from "@trpc/server/shared"
 import { Model, Schema, Types, Document } from "mongoose"
 import tscore from "@ts.app/core"
+import { Serialize } from "@trpc/server/unstable-core-do-not-import"
 
 export type TokenStatus =
 | "initilized" // token is created but callback is not received from provider
