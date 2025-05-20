@@ -9,7 +9,6 @@ export const tsapp = new ENV(
         TS_VOLUME: zod.string().default('["../../../../:/tsapp/"]'),
         TS_SUBNET: zod.string(),
         TS_TIME_ZONE: zod.string(),
-        TS_DOMAIN_NAME: zod.string(),
         TS_INIT_PSW: zod.string(),
         TS_INIT_EMAIL: zod.string().email(),
         TS_RCS: zod.string().default("").optional(),
@@ -25,7 +24,6 @@ export const tsapp = new ENV(
         TS_VOLUME: '["../../../../:/tsapp/"]',
         TS_SUBNET: "10.44.44.0/24",
         TS_TIME_ZONE: "UTC",
-        TS_DOMAIN_NAME: "localhost",
         TS_INIT_PSW: "root-psw",
         TS_INIT_EMAIL: "test@test.com",
         TS_RCS: "",
@@ -60,6 +58,7 @@ export const haproxy = new ENV(
 
 export const certbot = new ENV(
     {
+        CERTBOT_DOMAIN: zod.string(),
         CERTBOT_IP: zod.string().ip(),
         CERTBOT_PORT: zod.string(),
         CERTBOT_SELFSIGNED: zod.coerce.boolean().default(false).optional(),
@@ -69,6 +68,7 @@ export const certbot = new ENV(
         CERTBOT_EMAIL: zod.string().email(),
     },
     {
+        CERTBOT_DOMAIN: "localhost",
         CERTBOT_IP: "10.44.44.40",
         CERTBOT_PORT: "80",
         CERTBOT_SELFSIGNED: true,

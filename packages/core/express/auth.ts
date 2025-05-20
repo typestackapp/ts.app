@@ -14,7 +14,7 @@ import { AccessValidator } from '@ts.app/core/models/user/access/util.js'
 import { CallbackOptions, ClientSession } from '@ts.app/core/models/user/app/oauth/client.js'
 import { UserModel } from '@ts.app/core/models/user.js'
 import { RoleConfigModel } from '@ts.app/core/models/config/role.js'
-import { tsapp } from "@ts.app/core/configs/env.js"
+import { tsapp, certbot } from "@ts.app/core/configs/env.js"
 import tscore, { ExpressErrorResponse, ExpressResponse, ExpressRouter } from "@ts.app/core"
 
 const config = tscore.config
@@ -687,7 +687,7 @@ export const authRouter = t.router({
 
         const token_data: BearerTokenInputData = {
             grant_type: "authorization_code",
-            issuer: tsapp.env.TS_DOMAIN_NAME,
+            issuer: certbot.env.CERTBOT_DOMAIN,
             access: app.data.access,
             token: result.data
         }

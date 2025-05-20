@@ -8,7 +8,7 @@ import { AccessTokenJWKData, RefreshTokenJWKData, JWKCache } from "@ts.app/core/
 import * as jose from 'jose'
 import moment, { unitOfTime } from "moment"
 import mongoose, { Types } from "mongoose"
-import { tsapp } from "@ts.app/core/configs/env.js"
+import { tsapp, certbot } from "@ts.app/core/configs/env.js"
 import { GrantType, OauthAppModel } from "@ts.app/core/models/user/app/oauth.js"
 import { TokenStatus } from "@ts.app/core/models/user/token.js"
 
@@ -124,7 +124,7 @@ export async function newRefreshToken(user: UserDocument, client_id: string, gra
     const refresh_token_key = await jose.importJWK(refresh_jwk.key)
     const access_token_key = await jose.importJWK(access_jwk.key)
     const token_id = options._id || new mongoose.Types.ObjectId()
-    const issuer = options.issuer || tsapp.env.TS_DOMAIN_NAME
+    const issuer = options.issuer || certbot.env.CERTBOT_DOMAIN
     const status = options.status || "active"
 
     const refreshTokenExtendTime = options.refreshTokenExtendTime || refresh_jwk.data.extendTime
@@ -210,7 +210,7 @@ export async function newAccessToken( refresh_key: string, access_key: string, o
     const refresh_jwk = await JWKCache.get<RefreshTokenJWKData>(refresh_token_config_id)
     const refresh_token_key = await jose.importJWK(refresh_jwk.key)
     const access_token_key = await jose.importJWK(access_jwk.key)
-    const issuer = options.issuer || tsapp.env.TS_DOMAIN_NAME
+    const issuer = options.issuer || certbot.env.CERTBOT_DOMAIN
 
     const refreshTokenExtendTime = options.refreshTokenExtendTime || refresh_jwk.data.extendTime
     const refreshTokenRenewAfter = options.refreshTokenRenewAfter || refresh_jwk.data.renewAfter

@@ -1,3 +1,4 @@
+import { tsapp, certbot } from "@ts.app/core/configs/env.js"
 import tscore, { TypeStack } from "@ts.app/core"
 import express from "express"
 import next from "next"
@@ -66,7 +67,7 @@ await TypeStack.init()
 .finally(() => {
     // CONSOLE LOG SERVER INFO
     console.log(`------------------NEXT SERVER INFO---------------------`)
-    console.log(`SERVER :  https://${tscore.config.env.tsapp.env.TS_DOMAIN_NAME}`)
-    console.log(`ENV    :  env.TYPE: ${tscore.config.env.tsapp.env.TS_ENV_TYPE}`)
+    console.log(`SERVER :  https://${certbot.env.CERTBOT_DOMAIN}`)
+    console.log(`ENV    :  env.TYPE: ${tsapp.env.TS_ENV_TYPE}`)
     console.log(`-------------------------------------------------------`)
 })

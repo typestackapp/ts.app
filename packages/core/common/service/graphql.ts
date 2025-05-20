@@ -1,4 +1,4 @@
-import { tsapp } from "@ts.app/core/configs/env.js"
+import { tsapp, certbot } from "@ts.app/core/configs/env.js"
 import { ApolloServer } from '@apollo/server'
 import type { WithRequired } from '@apollo/utils.withrequired';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
@@ -102,7 +102,7 @@ export async function graphqlLoader(server: http.Server) {
         )
 
         console.log(`---GRAPHQL ${graphql_server.pack} ${graphql_server.name} SERVER INFO-------`)
-        console.log(`SERVER:  https://${tsapp.env.TS_DOMAIN_NAME}${graphql_server.serverPath}`)
+        console.log(`SERVER:  https://${certbot.env.CERTBOT_DOMAIN}${graphql_server.serverPath}`)
         console.log(`------------------------------------------------------`)
     }
 

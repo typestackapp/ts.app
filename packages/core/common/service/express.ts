@@ -1,5 +1,5 @@
 import { TypeStack, ExpressRouter, ExpressResponse, IExpressRouter } from "@ts.app/core"
-import { tsapp } from "@ts.app/core/configs/env.js"
+import { tsapp, certbot } from "@ts.app/core/configs/env.js"
 import fs from "fs"
 import express, { Router } from "express"
 import http from "http"
@@ -51,7 +51,7 @@ export async function expressLoader(server: http.Server) {
 
     // CONSOLE LOG SERVER INFO
     console.log(`------------------API SERVER INFO---------------------`)
-    console.log(`SERVER :  https://${tsapp.env.TS_DOMAIN_NAME}/api`)
+    console.log(`SERVER :  https://${certbot.env.CERTBOT_DOMAIN}/api`)
     console.log(`------------------------------------------------------`)
 
     return {

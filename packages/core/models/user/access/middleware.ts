@@ -10,7 +10,7 @@ import { IAccessInput, ITokenType, IExpressMethod, IGraphqlMethod, IServerAccess
 import { ParamsDictionary, Query } from "express-serve-static-core"
 import { Request, Response, NextFunction } from "express"
 import { IGraphqlRouter, IExpressRouter, ExpressResponse, ExpressErrorResponse, GraphqlResovlerModule, GraphqlResovlerMethod, GraphqlContext } from '@ts.app/core/common/service.js'
-import { tsapp } from "@ts.app/core/configs/env.js"
+import { tsapp, certbot } from "@ts.app/core/configs/env.js"
 import { ApiKeyTokenModel } from '@ts.app/core/models/user/token/apikey.js'
 import { AccessTokenJWKData, JWKCache } from "@ts.app/core/models/config/jwk.js"
 import { access_token_config_id } from "@ts.app/core/updates/main.js"
@@ -519,7 +519,7 @@ export const validateApiKey = async ( key: string ): Promise<ValidUserToken> => 
 export const validateBearerKey = async ( key: string, options: BearerKeyOptions = {}, token_type: "Bearer" | "Cookie" ): Promise<ValidUserToken> => {
     const [token_id, access_token] = getToken(key)
     const access_jwk = await JWKCache.get<AccessTokenJWKData>(access_token_config_id)
-    const issuer = tsapp.env.TS_DOMAIN_NAME
+    const issuer = certbot.env.CERTBOT_DOMAIN
     const access_token_key = await jose.importJWK(access_jwk.key)
     const verified_access_token = await jose.jwtVerify(access_token, access_token_key, { issuer }) as AccessTokenPayloadVerified
     const extendedTime = options.accessTokenExtendTime || access_jwk.data.extendTime

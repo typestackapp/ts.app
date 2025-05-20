@@ -3,30 +3,35 @@ echo "--------------------------------------"
 echo "--------------CERTBOT-----------------"
 echo "--------------------------------------"
 
-CERTBOT_INIT=${CERTBOT_INIT:-"true"}
 EMAIL="-m ${CERTBOT_EMAIL}"
-SERVER=${TS_DOMAIN_NAME}
+SERVER=${CERTBOT_DOMAIN}
+
+CERTBOT_FLAGS=${CERTBOT_FLAGS:-""}
+CERTBOT_INIT=${CERTBOT_INIT:-"false"}
 CERTBOT_SELFSIGNED=${CERTBOT_SELFSIGNED:-"false"}
-CHAIN_SOURCE="/etc/letsencrypt/live/${SERVER}/fullchain.pem"
-CHAIN_DST="/home/ssl/${SERVER}/fullchain.pem"
-KEY_SOURCE="/etc/letsencrypt/live/${SERVER}/privkey.pem"
-KEY_DST="/home/ssl/${SERVER}/privkey.pem"
+
+CERTBOT_ROOT="/etc/letsencrypt/live/${SERVER}"
+KEY_SOURCE="${CERTBOT_ROOT}/privkey.pem"
+CHAIN_SOURCE="${CERTBOT_ROOT}/fullchain.pem"
+
+CERT_ROOT="/home/ssl/${SERVER}"
+KEY_DST="${CERT_ROOT}/privkey.pem"
+CHAIN_DST="${CERT_ROOT}/fullchain.pem"
 
 # if CERTBOT_EXTRA_DOMAIN_NAMES = string: "undefined" or "" then set to empty string
 EXTRA_DOMAIN_NAMES=${CERTBOT_EXTRA_DOMAIN_NAMES:-""}
-if [ "$EXTRA_DOMAIN_NAMES" = "undefined" ]; then
+if [ "${EXTRA_DOMAIN_NAMES}" = "undefined" ]; then
     EXTRA_DOMAIN_NAMES=""
 fi
-DOMAINS="-d ${TS_DOMAIN_NAME} ${EXTRA_DOMAIN_NAMES}"
+DOMAINS="-d ${CERTBOT_DOMAIN} ${EXTRA_DOMAIN_NAMES}"
 
 # install nginx and serve well known challenge in background
 apk add nginx
-nginx -g 'pid /tmp/nginx.pid; daemon off;' &
 
 echo "--------------------------------------"
 echo "CERTBOT_INIT="$CERTBOT_INIT
 echo "CERTBOT_SELFSIGNED="$CERTBOT_SELFSIGNED
-echo "SERVER="$SERVER
+echo "CERTBOT_FLAGS="$CERTBOT_FLAGS
 echo "DOMAINS="$DOMAINS
 echo "EMAIL="$EMAIL
 echo "--------------------------------------"
@@ -37,24 +42,23 @@ trap exit TERM
 # RENEW CERTBOT CERTS
 while true
 do  
-
     # create cert folder if not exist
-    if [ ! -d /home/ssl/${SERVER} ]; then
-        mkdir -p /home/ssl/${SERVER}
+    if [ ! -d "${CERT_ROOT}" ]; then
+        mkdir -p "$CERT_ROOT"
     fi
 
     # create self signed certificate
-    if [ "$CERTBOT_SELFSIGNED" = "true" ]; then
+    if [ "${CERTBOT_SELFSIGNED}" = "true" ]; then
         # check if certs are expired
         if openssl x509 -checkend 86400 -noout -in ${CHAIN_DST}; then
             echo "Certificate will not expire - Using existing self signed certificate SERVER=$SERVER"
         else
             echo "generating new certs, certs are expired or not found"
             # remove old certs if exist
-            if [ -f ${CHAIN_DST} ]; then
+            if [ -f "${CHAIN_DST}" ]; then
                 rm ${CHAIN_DST}
             fi
-            if [ -f ${KEY_DST} ]; then
+            if [ -f "${KEY_DST}" ]; then
                 rm ${KEY_DST}
             fi
             openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEY_DST} -out ${CHAIN_DST} -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=${SERVER}"
@@ -62,10 +66,10 @@ do
     fi
 
     # renew or init certs with certbot
-    if [ "$CERTBOT_SELFSIGNED" = "false" ]; then
+    if [ "${CERTBOT_SELFSIGNED}" = "false" ]; then
     
         # check if certs exists if not set CERTBOT_INIT to true
-        if [ ! -f ${CHAIN_DST} ]; then
+        if [ ! -f "${CHAIN_DST}" ]; then
             echo "certs not found, setting CERTBOT_INIT to true"
             CERTBOT_INIT="true"
         fi
@@ -84,7 +88,7 @@ do
 
         # Get currently issued domains from cert
         EXISTING_DOMAINS=""
-        if [ -f "${CHAIN_SOURCE}" ]; then
+        if [ -f ${CHAIN_SOURCE} ]; then
             EXISTING_DOMAINS=$(openssl x509 -in ${CHAIN_SOURCE} -noout -text \
                 | grep DNS: \
                 | sed 's/DNS://g' \
@@ -94,41 +98,48 @@ do
                 | sort \
                 | uniq)
 
-            REQUESTED_DOMAINS=$(echo "${TS_DOMAIN_NAME} ${CERTBOT_EXTRA_DOMAIN_NAMES}" \
+            REQUESTED_DOMAINS=$(echo "${CERTBOT_DOMAIN} ${CERTBOT_EXTRA_DOMAIN_NAMES}" \
                 | tr ' ' '\n' \
                 | sed 's/^-d//' \
                 | grep -v '^$' \
                 | sort \
                 | uniq)
 
-            if ! diff -q <(echo "$EXISTING_DOMAINS") <(echo "$REQUESTED_DOMAINS") > /dev/null; then
+            if ! diff -q <(echo "${EXISTING_DOMAINS}") <(echo "${REQUESTED_DOMAINS}") > /dev/null; then
                 echo "Domain list changed diff:"
-                diff <(echo "$EXISTING_DOMAINS") <(echo "$REQUESTED_DOMAINS")
+                diff <(echo "${EXISTING_DOMAINS}") <(echo "${REQUESTED_DOMAINS}")
                 CERTBOT_INIT="true"
             else
                 echo "Domain list unchanged. No need to force renewal."
             fi
         fi
 
+        # start nginx
+        echo "starting nginx"
+        nginx
+
         # initialize certbot on first run
-        if [ "$CERTBOT_INIT" = "true" ]; then
+        if [ "${CERTBOT_INIT}" = "true" ]; then
             INIT="true"
             echo "initializing certbot"
-            eval "certbot certonly --webroot --debug-challenges --webroot-path /var/www/wk/ ${DOMAINS} ${EMAIL} --agree-tos --force-renewal --non-interactive"
+            eval "certbot certonly \"$CERTBOT_FLAGS\" --webroot --debug-challenges --webroot-path /var/www/wk/ \"$DOMAINS\" \"$EMAIL\" --agree-tos --force-renewal --non-interactive"
         fi
 
+        # renew certs
         eval "certbot renew"
-        eval "install -c -m 777 ${CHAIN_SOURCE} ${CHAIN_DST}"
-        eval "install -c -m 777 ${KEY_SOURCE} ${KEY_DST}"
+
+        # stop nginx
+        echo "stopping nginx"
+        nginx -s stop || true
+
+        # install certs
+        eval "install -c -m 664 ${CHAIN_SOURCE} ${CHAIN_DST}"
+        eval "install -c -m 660 ${KEY_SOURCE} ${KEY_DST}"
     fi
 
-    # if cert.pem file exists remove it
-    if [ -f /home/ssl/${SERVER}/cert.pem ]; then
-        rm /home/ssl/${SERVER}/cert.pem
-    fi
-
-    # combine fullchain and privkey into cert.pem
-    cat ${CHAIN_DST} ${KEY_DST} > /home/ssl/${SERVER}/cert.pem
+    # check if certs are valid
+    openssl x509 -in ${CHAIN_DST} -noout -subject
+    openssl rsa -in ${KEY_DST} -check -noout
 
     sleep $CERTBOT_RESTART_TIME 
 done

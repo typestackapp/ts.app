@@ -3,7 +3,7 @@ echo "--------------------------------------"
 echo "---------------PROXY------------------"
 echo "--------------------------------------"
 
-SERVER=${TS_DOMAIN_NAME}
+SERVER=${CERTBOT_DOMAIN}
 
 while true; do
     # use haproxy graceful reload to avoid downtime

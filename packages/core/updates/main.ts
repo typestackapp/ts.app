@@ -8,7 +8,7 @@ import { secretHash, randomSecret } from "@ts.app/core/models/user/access/util.j
 import { UserInput, UserModel } from "@ts.app/core/models/user.js"
 import { IAccessInput } from "@ts.app/core"
 import { AccessDocument, AccessModel } from "@ts.app/core/models/user/access.js"
-import { tsapp, haproxy } from "@ts.app/core/configs/env.js"
+import { tsapp, haproxy, certbot } from "@ts.app/core/configs/env.js"
 import { TypeStack } from "@ts.app/core/common/cli/typestack.js"
 
 
@@ -39,7 +39,7 @@ export function getAllAccessInputs(): AccessDocument[] {
 }
 
 export const transaction: Transaction = async (session, update) => {
-    const host = `https://${tsapp.env.TS_DOMAIN_NAME}:${haproxy.env.HAPROXY_TS_PORT}`
+    const host = `https://${certbot.env.CERTBOT_DOMAIN}:${haproxy.env.HAPROXY_TS_PORT}`
 
     // ADD JWT FOR REFRESH TOKEN
     const refresh_token_config = await JWKConfigModel.findOne({ _id: refresh_token_config_id }, {}, { session })
@@ -144,9 +144,9 @@ export const transaction: Transaction = async (session, update) => {
             redirect_url: `${host}/admin`,
             token_url: tsapp.env.TS_ENV_TYPE == "dev" ? `http://${tsapp.env.TS_IP}:8000/api/auth/token` : `${host}/api/auth/token` 
         },
-        icon: `https://${tsapp.env.TS_DOMAIN_NAME}:${haproxy.env.HAPROXY_TS_PORT}/public/logo.png`,
-        name: tsapp.env.TS_DOMAIN_NAME,
-        description: `Use ${tsapp.env.TS_DOMAIN_NAME} account`,
+        icon: `https://${certbot.env.CERTBOT_DOMAIN}:${haproxy.env.HAPROXY_TS_PORT}/public/logo.png`,
+        name: certbot.env.CERTBOT_DOMAIN,
+        description: `Use ${certbot.env.CERTBOT_DOMAIN} account`,
         created_by: system_admin_id,
         updated_by: system_admin_id
     }

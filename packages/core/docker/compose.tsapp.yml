@@ -56,12 +56,13 @@ services:
     image: certbot/certbot:latest
     restart: always
     environment:
-      - TS_DOMAIN_NAME=${TS_DOMAIN_NAME}
+      - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
       - CERTBOT_SELFSIGNED=${CERTBOT_SELFSIGNED}
       - CERTBOT_INIT=${CERTBOT_INIT}
       - CERTBOT_EXTRA_DOMAIN_NAMES=${CERTBOT_EXTRA_DOMAIN_NAMES}
       - CERTBOT_RESTART_TIME=${CERTBOT_RESTART_TIME}
       - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+      - CERTBOT_FLAGS=${CERTBOT_FLAGS}
     networks:
       ts_net:
         ipv4_address: ${CERTBOT_IP}
