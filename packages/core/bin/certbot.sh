@@ -10,13 +10,17 @@ CERTBOT_FLAGS=${CERTBOT_FLAGS:-""}
 CERTBOT_INIT=${CERTBOT_INIT:-"false"}
 CERTBOT_SELFSIGNED=${CERTBOT_SELFSIGNED:-"false"}
 
+# Certbot certificates paths
 CERTBOT_ROOT="/etc/letsencrypt/live/${SERVER}"
 KEY_SOURCE="${CERTBOT_ROOT}/privkey.pem"
 CHAIN_SOURCE="${CERTBOT_ROOT}/fullchain.pem"
+CERT_SOURCE="${CERTBOT_ROOT}/cert.pem"
 
+# Certificate output paths
 CERT_ROOT="/home/ssl/${SERVER}"
 KEY_DST="${CERT_ROOT}/privkey.pem"
 CHAIN_DST="${CERT_ROOT}/fullchain.pem"
+CERT_DST="${CERT_ROOT}/cert.pem"
 
 # if CERTBOT_EXTRA_DOMAIN_NAMES = string: "undefined" or "" then set to empty string
 EXTRA_DOMAIN_NAMES=${CERTBOT_EXTRA_DOMAIN_NAMES:-""}
@@ -35,9 +39,6 @@ echo "CERTBOT_FLAGS="$CERTBOT_FLAGS
 echo "DOMAINS="$DOMAINS
 echo "EMAIL="$EMAIL
 echo "--------------------------------------"
-
-# prevents container from stopping while nginx is running
-trap exit TERM
 
 # RENEW CERTBOT CERTS
 while true
@@ -61,7 +62,10 @@ do
             if [ -f "${KEY_DST}" ]; then
                 rm ${KEY_DST}
             fi
-            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEY_DST} -out ${CHAIN_DST} -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=${SERVER}"
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout ${KEY_DST} -out ${CERT_DST} -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=${SERVER}"
+
+            # combine cert and key into fullchain
+            cat ${CERT_DST} ${KEY_DST} > ${CHAIN_DST}
         fi
     fi
 
@@ -120,7 +124,6 @@ do
 
         # initialize certbot on first run
         if [ "${CERTBOT_INIT}" = "true" ]; then
-            INIT="true"
             echo "initializing certbot"
             eval "certbot certonly \"$CERTBOT_FLAGS\" --webroot --debug-challenges --webroot-path /var/www/wk/ \"$DOMAINS\" \"$EMAIL\" --agree-tos --force-renewal --non-interactive"
         fi
@@ -133,8 +136,9 @@ do
         nginx -s stop || true
 
         # install certs
-        eval "install -c -m 664 ${CHAIN_SOURCE} ${CHAIN_DST}"
-        eval "install -c -m 660 ${KEY_SOURCE} ${KEY_DST}"
+        eval "install -c -m 644 ${CHAIN_SOURCE} ${CHAIN_DST}"
+        eval "install -c -m 644 ${KEY_SOURCE} ${KEY_DST}"
+        eval "install -c -m 644 ${CERT_SOURCE} ${CERT_DST}"
     fi
 
     # check if certs are valid
