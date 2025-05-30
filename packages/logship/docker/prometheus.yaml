@@ -1,0 +1,5 @@
+global:
+  scrape_interval: 15s
+
+# No need to scrape Alloy metrics directly because Alloy is pushing metrics to this instance via remote_write.
+scrape_configs: []

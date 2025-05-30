@@ -1,0 +1,14 @@
+volumes:
+  grafana:
+    driver: local
+
+services:
+  grafana:
+    mem_limit: 2g
+    image: grafana/grafana:11.6.1
+    restart: always
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+    volumes:
+      - grafana:/var/lib/grafana

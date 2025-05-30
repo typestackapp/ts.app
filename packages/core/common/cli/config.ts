@@ -11,7 +11,6 @@ import path from 'path'
 import moment from 'moment'
 import { TypeStack, CWD, TypeStackPackageWithAlias as Package } from '@ts.app/core/common/cli/typestack.js'
 import chalk from 'chalk'
-import { trackAllowedDynamicAccess } from 'next/dist/server/app-render/dynamic-rendering'
 
 const exec = child_process.execSync
 
@@ -379,6 +378,7 @@ export const config = async (options: ConfigOptions) => {
             const file_content = fs.readFileSync(haproxy_input_file_path, 'utf8')
             if(!haproxy_output_file_content[file_name]) haproxy_output_file_content[file_name] = ""
             
+            // TODO fix append or rewrite
             if(pack.options.haproxy_rewrite) {
                 haproxy_output_file_content[file_name] = "# " + pack.pack.json.name + ", " + file_name + "\n" + file_content + "\n"
             }else {
@@ -391,7 +391,7 @@ export const config = async (options: ConfigOptions) => {
     let haproxy_output_content = ""
     const haproxy_output_folder = `${appdata}/haproxy`
     const haproxy_output_file = `${haproxy_output_folder}/proxy.cfg`
-    const haproxy_order = ["resolvers", "global", "defaults", "frontend", "backend" ]
+    const haproxy_order = ["resolvers", "global", "defaults", "frontend", "backend", "userlist"]
     const haproxy_output_content_order: {file_name: string, content: string}[] = []
     for(const file_name of haproxy_order) {
         for(const [key, content] of Object.entries(haproxy_output_file_content)) {

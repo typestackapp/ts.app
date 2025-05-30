@@ -1,0 +1,15 @@
+services:
+  logship_alloy:
+    image: grafana/alloy:latest
+    network_mode: host
+    pid: host
+    environment:
+      - LOGSHIP_LABEL_HOST={{.Node.Hostname}}
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./alloy.${@NAMETAG}.yaml:/etc/alloy/config.alloy
+    command: 
+      - 'run --config.file=/etc/alloy/config.alloy'

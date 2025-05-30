@@ -349,19 +349,15 @@ export function prepareEnvVars(env_path: string) {
         const env_var_name = env_var[0].replace(/\t|\s/g, "").replace("#", "")
 
         // remove all starting and ending spaces from env var value and remove all " characters
-        var env_var_value_tmp = env_var[1].replace(/^\s+|\s+$/g, "").replace(/"/g, "")
+        var env_var_value_tmp = env_var[1].replace(/^\s+|\s+$/g, "")
         // remove all content after # sign
         env_var_value_tmp = env_var_value_tmp.split("#")[0]
-        // trim spaces from env var value
-        env_var_value_tmp = env_var_value_tmp.trim()
-        // trim ' and  " qoutes from env var value
-        env_var_value_tmp = env_var_value_tmp.replace(/^['"]|['"]$/g, "")
         const env_var_value = env_var_value_tmp
 
         env_vars[env_var_name] = env_var_value
         if(!env_var_value || !env_var_name) continue
         env_vars[env_var_name] = env_var_value
-        // console.log(env_var_name + "=" + env_var_value)
+        // console.log(env_var_name + "=" + env_var_value, env_var[1])
     }
 
     // foreach env var replace ${var} with value

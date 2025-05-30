@@ -77,7 +77,7 @@ export class ENV<T extends ZodEnvObject> {
         return this.zod.safeParse(env);
     }
 
-    public export<N extends ZodEnvObject>(shape?: N, example?: Partial<zod.infer<zod.ZodObject<T>>> & zod.infer<zod.ZodObject<N>>, options?: Partial<EnvOptions>) {
+    public extend<N extends ZodEnvObject>(shape?: N, example?: Partial<zod.infer<zod.ZodObject<T>>> & zod.infer<zod.ZodObject<N>>, options?: Partial<EnvOptions>) {
         const _example = { ...this._example, ...example } as zod.infer<zod.ZodObject<T & N>>
         const env = new ENV({ ...this._zod.shape, ...shape }, _example, { ...this._options, ...options });
         env._error = this._error;

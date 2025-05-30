@@ -6,17 +6,22 @@ import { GraphqlOptions } from '@ts.app/core/common/cli/graphql.js'
 import { DefaultOptions } from "@ts.app/core/common/cli/util.js"
 import { TypeStack } from '@ts.app/core/common/cli/typestack.js'
 import { UpdateOptions } from "@ts.app/core/common/cli/update.js"
+import { PswOptions } from "@ts.app/core/common/cli/psw.js"
+
 import minimist from "minimist"
 
 const argv = minimist(process.argv.slice(2))
 const action = argv['_'][0]
 const cwd = TypeStack.findCWD(undefined, argv.cwd)
+const exeptions = ['psw']
 
 console.log(`Using ${cwd.entrypoint} config: ${cwd.typestack}/typestack.ts`)
 console.log(`Using action: ${action} with args:`, argv)
 
-if(!cwd.typestack) console.log(`Could not find typestack entry point`)
-if(!cwd.typestack) process.exit(1)
+if(!cwd.typestack && !exeptions.includes(action)) {
+    console.log(`Could not find typestack entry point`)
+    process.exit(1)
+}
 
 const config_options: ConfigOptions = {
     cwd: cwd,
@@ -40,6 +45,11 @@ const update_options: UpdateOptions = {
 const default_options: DefaultOptions = {
     cwd: cwd,
     argv: process.argv
+}
+
+const psw_options: PswOptions = {
+    p: argv.p,
+    a: argv.a || 'bcrypt'
 }
 
 switch(action) {
@@ -68,6 +78,10 @@ switch(action) {
         .then(module => module.cleanup(default_options))
         .catch(error => console.log(error))
     break
+    case 'psw':
+        import("@ts.app/core/common/cli/psw.js")
+        .then(module => module.cleanup(psw_options))
+        .catch(error => console.log(error))
     default:
         console.log(`Unknown action: ${action}`)
         console.log(`Available actions: init, config, service, docker, update`)

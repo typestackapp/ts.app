@@ -1,0 +1,46 @@
+host_metrics "default" {
+  forward_to = [prometheus.remote_write.local.receiver]
+  procfs     = "/host/proc"
+  sysfs      = "/host/sys"
+  rootfs     = "/host/root"
+  labels = {
+    host = "${LOGSHIP_LABEL_HOST}"
+  }
+}
+
+discovery.file "docker_logs" {
+  targets = [
+    {
+      __path__ = "/var/lib/docker/containers/*/*.log"
+      job      = "docker"
+    }
+  ]
+}
+
+loki.source.docker "containers" {
+  targets    = discovery.file.docker_logs.targets
+  forward_to = [loki.write.default.receiver]
+  labels = {
+    host = "${LOGSHIP_LABEL_HOST}"
+  }
+}
+
+prometheus.remote_write "local" {
+  endpoint {
+    url = "https://${LOGSHIP_HOST}:${LOGSHIP_PORT}/prometheus/api/v1/write"
+    basic_auth {
+      username = "${LOGSHIP_USERNAME}"
+      password = "${LOGSHIP_PASSWORD}"
+    }
+  }
+}
+
+loki.write "default" {
+  endpoint {
+    url = "https://${LOGSHIP_HOST}:${LOGSHIP_PORT}/loki/api/v1/push"
+    basic_auth {
+      username = "${LOGSHIP_USERNAME}"
+      password = "${LOGSHIP_PASSWORD}"
+    }
+  }
+}

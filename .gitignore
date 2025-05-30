@@ -4,11 +4,11 @@ dist
 appdata
 packages/*
 package-lock.json
-!packages/cli
 !packages/core
 !packages/dev
-!packages/test
 !packages/wireguard
+!packages/logship
+!packages/grafana
 
 # JAVA projects
 HELP.md

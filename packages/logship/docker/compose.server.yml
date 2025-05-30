@@ -1,0 +1,31 @@
+
+volumes:
+  logship_loki:
+    driver: local
+  logship_prometheus:
+    driver: local
+
+services:
+  logship_loki:
+    mem_limit: 1g
+    restart: unless-stopped
+    image: grafana/loki:3.5
+    volumes:
+      - ./loki.${@NAMETAG}.yaml:/etc/loki/local-config.yaml
+      - logship_loki:/loki
+    command:
+      - '-config.file=/etc/loki/local-config.yaml'
+
+  logship_prometheus:
+    mem_limit: 1g
+    restart: unless-stopped
+    image: prom/prometheus:v3.4.0
+    volumes:
+      - ./prometheus.${@NAMETAG}.yaml:/etc/prometheus/prometheus.yml
+      - logship_prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
