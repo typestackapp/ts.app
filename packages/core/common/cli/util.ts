@@ -388,11 +388,13 @@ export async function prepareDockerFile(global_compose_file: Buffer | string | u
             return dollars.slice(0, dollars.length - 1) + `\${${name}}`
         }
     
-        const replace_with = env_vars[name]
-        if(replace_with == undefined) {
+        // trim ' and  " qoutes from env var value
+        const replace_with = env_vars[name]?.replace(/^['"]|['"]$/g, "")
+        if(replace_with == undefined || replace_with == null || replace_with == '') {
             console.warn(`Missing env: ${env_name}, var: ${name}, in: ${file.split('/').pop()}`)
             return ''
         }
+
         return replace_with
     })
 
