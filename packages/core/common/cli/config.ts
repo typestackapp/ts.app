@@ -325,7 +325,8 @@ export const config = async (options: ConfigOptions) => {
             "@FILE": env.file, // full env file name
             "@NAME": env.name, // env file name without tags
             "@TAG":env.tag, // env file tags
-            "@NAMETAG": env.nametag // env file name with tags
+            "@NAMETAG": env.nametag, // env file name with tags
+            "@HOSTNAME": child_process.execSync('hostname').toString().trim(),
         }
         for(const [i, file] of Object.entries(docker_files)) {
             if(!file) {

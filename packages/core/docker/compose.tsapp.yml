@@ -50,7 +50,6 @@ services:
         ipv4_address: ${RABBITMQ_IP}
     volumes:
       - rabbitmq:/var/lib/rabbitmq/
-      - rabbitmq:/var/log/rabbitmq/
 
   certbot:
     image: certbot/certbot:latest
@@ -71,8 +70,6 @@ services:
       - ${@APPDATA}/configs/haproxy/wk/:/var/www/wk/
       - ${@APPDATA}/configs/haproxy/ssl/:/home/ssl/
       - ${@APPDATA}/configs/letsencrypt/:/etc/letsencrypt/
-      - ${@APPDATA}/logs/certbot/:/etc/nginx/logs/
-      - ${@APPDATA}/logs/letsencrypt/:/var/log/letsencrypt/
       - ${@PACKAGE}/bin/certbot.sh:/home/scripts/certbot.sh
     entrypoint: /home/scripts/certbot.sh
     ports:
@@ -92,7 +89,6 @@ services:
         ipv4_address: ${HAPROXY_IP}
     volumes:
       - ${@APPDATA}/../../haproxy/proxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
-      - ${@APPDATA}/logs/haproxy/:/var/log/
       - ${@APPDATA}/configs/haproxy/ssl/:/home/ssl/
       - ${@PACKAGE}/bin/haproxy.sh:/home/scripts/haproxy.sh
     entrypoint: /home/scripts/haproxy.sh

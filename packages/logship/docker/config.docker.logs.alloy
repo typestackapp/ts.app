@@ -1,0 +1,37 @@
+discovery.docker "linux" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "docker_logs" {
+  targets = discovery.docker.linux.targets
+
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex = "/(.*)"
+    target_label = "service_name"
+  }
+}
+
+loki.source.docker "default" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.docker.linux.targets
+  labels     = {
+    "type"   = "docker_logs",
+    "source" = sys.env("LOGSHIP_SOURCE"),
+  }
+  relabel_rules = discovery.relabel.docker_logs.rules
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "https://" + sys.env("LOGSHIP_HOST") + ":" + sys.env("LOGSHIP_PORT") + "/loki/api/v1/push"
+    basic_auth {
+      username = sys.env("LOGSHIP_USERNAME")
+      password = sys.env("LOGSHIP_PASSWORD")
+    }
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+}

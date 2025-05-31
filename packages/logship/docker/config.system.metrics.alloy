@@ -1,0 +1,37 @@
+prometheus.exporter.unix "local_system" {
+  include_exporter_metrics = true
+  disable_collectors = ["mdadm"]
+}
+
+prometheus.scrape "system_metrics" {
+  targets         = prometheus.exporter.unix.local_system.targets
+  scrape_interval = "10s"
+  forward_to      = [prometheus.relabel.system_labels.receiver]
+}
+
+prometheus.relabel "system_labels" {
+  forward_to = [prometheus.remote_write.local.receiver]
+  rule {
+    action       = "replace"
+    target_label = "type"
+    replacement  = "system_metrics"
+  }
+  rule {
+    action       = "replace"
+    target_label = "source"
+    replacement  = sys.env("LOGSHIP_SOURCE")
+  }
+}
+
+prometheus.remote_write "local" {
+  endpoint {
+    url = "https://" + sys.env("LOGSHIP_HOST") + ":" + sys.env("LOGSHIP_PORT") + "/prometheus/api/v1/write"
+    basic_auth {
+      username = sys.env("LOGSHIP_USERNAME")
+      password = sys.env("LOGSHIP_PASSWORD")
+    }
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+}

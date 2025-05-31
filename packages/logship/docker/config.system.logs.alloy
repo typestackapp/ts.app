@@ -1,0 +1,26 @@
+local.file_match "system_logs" {
+  path_targets = [{
+    __address__ = "localhost",
+    __path__    = "/var/log/{syslog,messages,*.log}",
+    source      = sys.env("LOGSHIP_SOURCE"),
+    type        = "system_logs",
+  }]
+}
+
+loki.source.file "system_logs" {
+  targets    = local.file_match.system_logs.targets
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "https://" + sys.env("LOGSHIP_HOST") + ":" + sys.env("LOGSHIP_PORT") + "/loki/api/v1/push"
+    basic_auth {
+      username = sys.env("LOGSHIP_USERNAME")
+      password = sys.env("LOGSHIP_PASSWORD")
+    }
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+}

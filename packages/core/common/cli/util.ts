@@ -349,15 +349,19 @@ export function prepareEnvVars(env_path: string) {
         const env_var_name = env_var[0].replace(/\t|\s/g, "").replace("#", "")
 
         // remove all starting and ending spaces from env var value and remove all " characters
-        var env_var_value_tmp = env_var[1].replace(/^\s+|\s+$/g, "")
+        var env_var_value_tmp = env_var[1].replace(/^\s+|\s+$/g, "").replace(/"/g, "")
         // remove all content after # sign
         env_var_value_tmp = env_var_value_tmp.split("#")[0]
+        // trim spaces from env var value
+        env_var_value_tmp = env_var_value_tmp.trim()
+        // trim ' and  " qoutes from env var value
+        env_var_value_tmp = env_var_value_tmp.replace(/^['"]|['"]$/g, "")
         const env_var_value = env_var_value_tmp
 
         env_vars[env_var_name] = env_var_value
         if(!env_var_value || !env_var_name) continue
         env_vars[env_var_name] = env_var_value
-        // console.log(env_var_name + "=" + env_var_value, env_var[1])
+        // console.log(env_var_name + "=" + env_var_value)
     }
 
     // foreach env var replace ${var} with value
@@ -388,13 +392,11 @@ export async function prepareDockerFile(global_compose_file: Buffer | string | u
             return dollars.slice(0, dollars.length - 1) + `\${${name}}`
         }
     
-        // trim ' and  " qoutes from env var value
-        const replace_with = env_vars[name]?.replace(/^['"]|['"]$/g, "")
-        if(replace_with == undefined || replace_with == null || replace_with == '') {
+        const replace_with = env_vars[name]
+        if(replace_with == undefined) {
             console.warn(`Missing env: ${env_name}, var: ${name}, in: ${file.split('/').pop()}`)
             return ''
         }
-
         return replace_with
     })
 

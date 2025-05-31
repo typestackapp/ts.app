@@ -5,7 +5,6 @@ echo "--------------------------------------"
 
 FULLCHAIN="/home/ssl/"${CERTBOT_DOMAIN}"/fullchain.pem"
 CONFIG_FILE="/usr/local/etc/haproxy/haproxy.cfg"
-LOG_FILE="/var/log/proxy.log"
 
 while true; do
     # Check if the fullchain file exists
@@ -39,10 +38,10 @@ while true; do
 
     if [ -n "$PID" ]; then
         echo "[HAPROXY] INFO: Reloading HAProxy with PID $PID"
-        haproxy -f "$CONFIG_FILE" -D -sf $PID >> "$LOG_FILE" 2>&1
+        haproxy -f "$CONFIG_FILE" -sf $PID
     else
         echo "[HAPROXY] INFO: Starting HAProxy (no running process found)"
-        haproxy -f "$CONFIG_FILE" -D >> "$LOG_FILE" 2>&1
+        haproxy -f "$CONFIG_FILE"
     fi
 
     sleep $CERTBOT_RESTART_TIME

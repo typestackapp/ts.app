@@ -1,0 +1,71 @@
+services:
+  logship_system_logs:
+    image: grafana/alloy:v1.8.1
+    network_mode: host
+    pid: host
+    restart: always
+    logging:
+      driver: "local"
+    env_file:
+      - ./.${@ALIAS}.${@NAMETAG}.env
+    volumes:
+      - ./config.${@NAMETAG}.system.logs.alloy:/etc/alloy/config.alloy
+      - /var/log:/host/var/log:ro
+    command:
+      - "run"
+      - "--storage.path=/var/lib/alloy/data"
+      - "/etc/alloy/config.alloy"
+
+  logship_system_metrics:
+    image: grafana/alloy:v1.8.1
+    network_mode: host
+    pid: host
+    restart: always
+    logging:
+      driver: "local"
+    env_file:
+      - ./.${@ALIAS}.${@NAMETAG}.env
+    volumes:
+      - ./config.${@NAMETAG}.system.metrics.alloy:/etc/alloy/config.alloy
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/host/root:ro
+    command:
+      - "run"
+      - "--storage.path=/var/lib/alloy/data"
+      - "/etc/alloy/config.alloy"
+
+  logship_docker_logs:
+    image: grafana/alloy:v1.8.1
+    network_mode: host
+    pid: host
+    restart: always
+    logging:
+      driver: "local"
+    env_file:
+      - ./.${@ALIAS}.${@NAMETAG}.env
+    volumes:
+      - ./config.${@NAMETAG}.docker.logs.alloy:/etc/alloy/config.alloy
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "run"
+      - "--storage.path=/var/lib/alloy/data"
+      - "/etc/alloy/config.alloy"
+
+  logship_docker_metrics:
+    image: grafana/alloy:v1.8.1
+    network_mode: host
+    pid: host
+    restart: always
+    logging:
+      driver: "local"
+    env_file:
+      - ./.${@ALIAS}.${@NAMETAG}.env
+    volumes:
+      - ./config.${@NAMETAG}.docker.metrics.alloy:/etc/alloy/config.alloy
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "run"
+      - "--storage.path=/var/lib/alloy/data"
+      - "/etc/alloy/config.alloy"
