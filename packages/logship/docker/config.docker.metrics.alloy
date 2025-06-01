@@ -3,8 +3,8 @@ prometheus.exporter.cadvisor "local_system" {
 }
 
 prometheus.scrape "docker_metrics" {
-  targets         = prometheus.exporter.cadvisor.local_system.targets
   scrape_interval = "10s"
+  targets         = prometheus.exporter.cadvisor.local_system.targets
   forward_to      = [prometheus.relabel.system_labels.receiver]
 }
 
