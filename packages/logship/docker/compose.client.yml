@@ -2,13 +2,12 @@ services:
   logship_docker_logs:
     image: grafana/alloy:v1.8.1
     restart: always
-    logging:
-      driver: "local"
     env_file:
       - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.docker.logs.alloy:/etc/alloy/config.alloy
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/lib/docker/:/var/lib/docker:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
       - "run"
@@ -18,12 +17,14 @@ services:
   logship_docker_metrics:
     image: grafana/alloy:v1.8.1
     restart: always
-    logging:
-      driver: "local"
+    pid: host
     env_file:
       - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.docker.metrics.alloy:/etc/alloy/config.alloy
+      - /proc:/proc
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command:
       - "run"
@@ -33,8 +34,6 @@ services:
   logship_system_logs:
     image: grafana/alloy:v1.8.1
     restart: always
-    logging:
-      driver: "local"
     env_file:
       - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
@@ -47,11 +46,8 @@ services:
 
   logship_system_metrics:
     image: grafana/alloy:v1.8.1
-    network_mode: host
     pid: host
     restart: always
-    logging:
-      driver: "local"
     env_file:
       - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:

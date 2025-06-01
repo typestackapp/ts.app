@@ -1,14 +1,4 @@
-import { ENV, zod } from "@ts.app/core/common/cli/env.js"
-import child_process from 'child_process'
-
-const getSource = () => {
-    try {
-        return child_process.execSync('hostname').toString().trim();
-    } catch (error) {
-        console.error("Failed to get hostname:", error);
-        return 'dev';
-    }
-}
+import { ENV, zod, getHost } from "@ts.app/core/common/cli/env.js"
 
 export const logship = new ENV(
     {
@@ -23,7 +13,7 @@ export const logship = new ENV(
         LOGSHIP_PORT: 8080,
         LOGSHIP_USERNAME: "root",
         LOGSHIP_PASSWORD: "root-psw",
-        LOGSHIP_SOURCE: getSource(),
+        LOGSHIP_SOURCE: getHost(),
     },
     {
         default: true,

@@ -2,6 +2,7 @@ import zod, { z } from "zod"
 import path from "path"
 import fs from "fs"
 import { prepareEnvVars } from "@ts.app/core/common/cli/util.js"
+import child_process from 'child_process'
 
 export { zod }
 
@@ -185,4 +186,8 @@ export class ENV<T extends ZodEnvObject> {
             package: this.getFilePackageJson(dir)
         }
     }
+}
+
+export function getHost(): string {
+    return child_process.execSync('hostname').toString().trim();
 }

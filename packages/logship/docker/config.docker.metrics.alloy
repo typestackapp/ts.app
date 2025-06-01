@@ -1,5 +1,6 @@
 prometheus.exporter.cadvisor "local_system" {
   docker_only = true
+  store_container_labels = true
 }
 
 prometheus.scrape "docker_metrics" {
