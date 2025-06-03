@@ -19,7 +19,7 @@ export const tsapp = new ENV(
     {
         TS_ENV_TYPE: "dev",
         TS_ENTRY_POINT: "/tsapp/packages/dev",
-        TS_PORT: "8000",
+        TS_PORT: "7443",
         TS_IP: "10.44.44.44",
         TS_VOLUME: '["../../../../:/tsapp/"]',
         TS_SUBNET: "10.44.44.0/24",
@@ -41,14 +41,12 @@ export const haproxy = new ENV(
         HAPROXY_IP: zod.string().ip(),
         HAPROXY_PORT: zod.string(),
         HAPROXY_STATS_AUTH: zod.string(),
-        HAPROXY_TS_PORT: zod.string(),
         HAPROXY_MAXCONN: zod.string()
     },
     {
         HAPROXY_IP: "10.44.44.41",
-        HAPROXY_PORT: '["7443:443", "7444:9003", "7445:8404"]',
+        HAPROXY_PORT: '["7443:7443", "7444:7444", "7445:8404"]',
         HAPROXY_STATS_AUTH: "haproxy:root-psw",
-        HAPROXY_TS_PORT: "7443",
         HAPROXY_MAXCONN: "2048"
     },
     {
@@ -117,39 +115,5 @@ export const rabbitmq = new ENV(
         RABBITMQ_IP: "10.44.44.42",
         RABBITMQ_DEFAULT_USER: "root",
         RABBITMQ_DEFAULT_PASS: "root-psw",
-    }
-)
-
-export const sftp = new ENV(
-    {
-        SFTP_PORT: zod.string().default("22"),
-        SFTP_IP: zod.string().ip().default("10.44.44.46"),
-    },
-    {
-        SFTP_PORT: "22",
-        SFTP_IP: "10.44.44.46"
-    }
-)
-
-export const codeserver = new ENV(
-    {
-        CODESERVER_PORT: zod.string().default("8015"),
-        CODESERVER_IP: zod.string().ip().default("10.44.44.47"),
-        CODESERVER_PASSWORD: zod.string().default("root-psw"),
-        CODESERVER_HASHED_PASSWORD: zod.string().default(""),
-        CODESERVER_SUDO_PASSWORD: zod.string().default("root-psw"),
-        CODESERVER_SUDO_PASSWORD_HASH: zod.string().default(""),
-        CODESERVER_PROXY_DOMAIN: zod.string().default("codeserver"),
-        CODESERVER_DEFAULT_WORKSPACE: zod.string().default("/tsapp/"),
-    },
-    {
-        CODESERVER_PORT: "8015",
-        CODESERVER_IP: "10.44.44.47",
-        CODESERVER_PASSWORD: "root-psw",
-        CODESERVER_HASHED_PASSWORD: "",
-        CODESERVER_SUDO_PASSWORD: "root-psw",
-        CODESERVER_SUDO_PASSWORD_HASH: "",
-        CODESERVER_PROXY_DOMAIN: "codeserver",
-        CODESERVER_DEFAULT_WORKSPACE: "/tsapp/"
     }
 )

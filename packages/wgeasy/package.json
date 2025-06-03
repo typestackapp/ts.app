@@ -1,0 +1,50 @@
+{
+  "name": "@ts.app/wgeasy",
+  "version": "0.0.1",
+  "description": "",
+  "scripts": {
+    "build": "tsc -p ./tsconfig.json",
+    "tsc:watch": "tsc -w -p ./tsconfig.json",
+    "css:watch": "tailwindcss -c ./tailwind/config.js -i ./tailwind/input.css -o ./next/public/dev.css --watch",
+    "test": "jest \"/.*\\.test\\.js\" --env=node --bail=1 --setupFiles ./common/test/env.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/typestackapp/ts.app.git"
+  },
+  "type": "module",
+  "module": "dist/esm/index.js",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.js"
+    },
+    "./*": {
+      "types": "./dist/types/*",
+      "import": "./dist/esm/*"
+    },
+    "./codegen/*": {
+      "types": "./codegen/*",
+      "import": "./codegen/*"
+    },
+    "./appdata/*": {
+      "types": "./appdata/*",
+      "import": "./appdata/*"
+    }
+  },
+  "files": [
+    "bin",
+    "dist",
+    "codegen",
+    "docker",
+    "haproxy",
+    "next",
+    "static",
+    "appdata/next/.next"
+  ],
+  "devDependencies": {},
+  "dependencies": {
+    "@ts.app/core": "^0.0.16"
+  }
+}

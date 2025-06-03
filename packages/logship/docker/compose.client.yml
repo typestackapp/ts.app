@@ -1,9 +1,9 @@
 services:
-  logship_docker_logs:
+  ${@NAMETAG}.docker.logs:
     image: grafana/alloy:v1.8.1
     restart: always
     env_file:
-      - ./.${@ALIAS}.${@NAMETAG}.env
+      - ./.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.docker.logs.alloy:/etc/alloy/config.alloy
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -14,12 +14,12 @@ services:
       - "--storage.path=/var/lib/alloy/data"
       - "/etc/alloy/config.alloy"
 
-  logship_docker_metrics:
+  ${@NAMETAG}.docker.metrics:
     image: grafana/alloy:v1.8.1
     restart: always
     pid: host
     env_file:
-      - ./.${@ALIAS}.${@NAMETAG}.env
+      - ./.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.docker.metrics.alloy:/etc/alloy/config.alloy
       - /proc:/proc
@@ -31,11 +31,11 @@ services:
       - "--storage.path=/var/lib/alloy/data"
       - "/etc/alloy/config.alloy"
 
-  logship_system_logs:
+  ${@NAMETAG}.system.logs:
     image: grafana/alloy:v1.8.1
     restart: always
     env_file:
-      - ./.${@ALIAS}.${@NAMETAG}.env
+      - ./.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.system.logs.alloy:/etc/alloy/config.alloy
       - /var/log:/host/var/log:ro
@@ -44,12 +44,12 @@ services:
       - "--storage.path=/var/lib/alloy/data"
       - "/etc/alloy/config.alloy"
 
-  logship_system_metrics:
+  ${@NAMETAG}.system.metrics:
     image: grafana/alloy:v1.8.1
     pid: host
     restart: always
     env_file:
-      - ./.${@ALIAS}.${@NAMETAG}.env
+      - ./.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.system.metrics.alloy:/etc/alloy/config.alloy
       - /proc:/proc

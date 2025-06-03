@@ -378,15 +378,18 @@ export function prepareEnvVars(env_path: string) {
     return env_vars
 }
 
-export async function prepareDockerFile(global_compose_file: Buffer | string | undefined, env_vars: any, file: string, output: string, env_name: string) {
+export function prepareDockerFile(global_compose_file: Buffer | string | undefined, env_vars: any, file: string, output: string, env_name: string) {
     // read compose file
     let docker_compose_file = fs.readFileSync(file).toString() 
-
     // add global compose file to docker_compose_file with new line
     docker_compose_file = (global_compose_file || "") + "\r" + docker_compose_file
-    
     // replace file env variables
-    const docker_compose_file_new = docker_compose_file.replace(/(\$*)\$\{([^}]+)\}/g, function(match, dollars, name) {
+    const docker_compose_file_new = templateReplace(docker_compose_file, env_vars, file, env_name)
+    fs.writeFileSync(output, docker_compose_file_new)
+}
+
+export function templateReplace(template: string, env_vars: any, file: string, env_name: string) {
+    return template.replace(/(\$*)\$\{([^}]+)\}/g, function(match, dollars, name) {
         if (dollars.length === 1) {
             // Escaped variable, reduce $$ to single $
             return dollars.slice(0, dollars.length - 1) + `\${${name}}`
@@ -399,8 +402,6 @@ export async function prepareDockerFile(global_compose_file: Buffer | string | u
         }
         return replace_with
     })
-
-    fs.writeFileSync(output, docker_compose_file_new)
 }
 
 export async function sleep(seconds: number) {

@@ -9,6 +9,7 @@ package-lock.json
 !packages/wireguard
 !packages/logship
 !packages/grafana
+!packages/wgeasy
 
 # JAVA projects
 HELP.md

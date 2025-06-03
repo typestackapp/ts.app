@@ -1,5 +1,5 @@
 services:
-  tsapp:
+  ${@NAMETAG}.app:
     depends_on:
       - mongo
       - rabbitmq
@@ -18,7 +18,7 @@ services:
       - "${TS_API_PORT}:8000"      # HTTP API
       - "${TS_GRAPHQL_PORT}:8002"  # HTTP GRAPHQL
 
-  mongo:
+  ${@NAMETAG}.mongo:
     image: mongo
     restart: always
     environment:
@@ -39,7 +39,7 @@ services:
     ports:
       - ${MONGO_PORT}:27017 # Expose DB for host
 
-  rabbitmq:
+  ${@NAMETAG}.rabbitmq:
     image: rabbitmq:3.9-management
     restart: always
     environment:
@@ -51,7 +51,7 @@ services:
     volumes:
       - rabbitmq:/var/lib/rabbitmq/
 
-  certbot:
+  ${@NAMETAG}.certbot:
     image: certbot/certbot:latest
     restart: always
     environment:
@@ -75,7 +75,7 @@ services:
     ports:
       - "${CERTBOT_PORT}:80" # CERTBOT HTTP
 
-  haproxy:
+  ${@NAMETAG}.haproxy:
     depends_on:
       - certbot
     mem_limit: 3g

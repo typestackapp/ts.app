@@ -3,10 +3,10 @@ import {
     emptyDir, prepareEnvVars, prepareDockerFile, 
     mkDirRecursive, getSymLink, unlinkFolder,
     linkFolder, AppConfigInput, generateHash,
-    getAdminAppsFile,
+    getAdminAppsFile, templateReplace
 } from '@ts.app/core/common/cli/util.js'
 import child_process from 'child_process'
-import { Module } from '@ts.app/core/common/cli/env.js'
+import { getHost, Module } from '@ts.app/core/common/cli/env.js'
 import path from 'path'
 import moment from 'moment'
 import { TypeStack, CWD, TypeStackPackageWithAlias as Package } from '@ts.app/core/common/cli/typestack.js'
@@ -207,12 +207,12 @@ export const config = async (options: ConfigOptions) => {
         path: string // env file path
         vars: ReturnType<typeof prepareEnvVars>
         file: string // env file name including tags and .env extension
-        name: string // env file name without tags
+        alias: string // env file name without tags
         tag: string // env file tag
         nametag: string // env file name with tag
     }[] = []
     for(const env_file of env_file_names) {
-        const env_file_name = env_file.split('.')[0]
+        const env_file_alias = env_file.split('.')[0]
         const env_file_tags = env_file.split('.').slice(1).slice(0, -1)
         const env_file_tag: string = env_file_tags.length > 0? env_file_tags.join('.') : ''
         const env_file_path = `${env_folder_path}/${env_file}`
@@ -221,9 +221,9 @@ export const config = async (options: ConfigOptions) => {
             path: env_file_path,
             vars,
             file: env_file,
-            name: env_file_name,
+            alias: env_file_alias,
             tag: env_file_tag,
-            nametag: `${env_file_name}${env_file_tag? `.${env_file_tag}`: ''}`,
+            nametag: `${env_file_alias}${env_file_tag? `.${env_file_tag}`: ''}`,
         })
     }
 
@@ -245,9 +245,9 @@ export const config = async (options: ConfigOptions) => {
 
     for(const env_file of envs) {
         // find module
-        const pack = Object.values(packages).find(pack => pack.alias == env_file.name)
+        const pack = Object.values(packages).find(pack => pack.alias == env_file.alias)
         if(!pack) {
-            console.error(chalk.red(`Error: Could not find package for ${env_file.file} via alias ${env_file.name}`))
+            console.error(chalk.red(`Error: Could not find package for ${env_file.file} via alias ${env_file.alias}`))
             continue
         }
         const env_mod = env_modules.find(mod => mod.key == pack.pack.json.name)
@@ -295,9 +295,9 @@ export const config = async (options: ConfigOptions) => {
 
     // create docker templates
     for(const env of Object.values(envs)) {
-        const pack = Object.values(packages).find(pack => pack.alias == env.name)
+        const pack = Object.values(packages).find(pack => pack.alias == env.alias)
         if(!pack) {
-            console.error(chalk.red(`Error: Could not find package for ${env.file} via alias ${env.name}`))
+            console.error(chalk.red(`Error: Could not find package for ${env.file} via alias ${env.alias}`))
             continue
         }
         const docker_files = docker_template_files[pack.pack.json.name]
@@ -312,22 +312,20 @@ export const config = async (options: ConfigOptions) => {
         if(!root_full_path) throw new Error("Missing root_full_path")
         const root_path = path.relative(docker_output_folder, root_full_path)
         const appdata_path = path.relative(docker_output_folder, appdata)
-
         const vars = {
             ...env.vars,
             "@ROOT": root_path, // root folder of the project
-            "@ALIAS": pack.alias, // alias of docker file package
+            "@ALIAS": pack.alias, // alias of package, used as env file first part
+            "@TAG":env.tag, // env file tags, all after first dot in env file name
+            "@NAMETAG": env.nametag, // combined alias and tag, used as env file name
             "@PACKAGE": `${root_path}/node_modules/${pack.pack.json.name}`, // full path to package
             "@DEFAULT": `[${default_env_files?.join(', ')}]`, // all package default env files
             "@VERSION": pack.pack.json.version, // package version
             "@SERVICE": `[${service_env_files[pack.pack.json.name]?.join(', ')}]`, // docker package service env files
             "@APPDATA": `${appdata_path}/docker/${pack.alias}`, // appdata folder for docker package
-            "@FILE": env.file, // full env file name
-            "@NAME": env.name, // env file name without tags
-            "@TAG":env.tag, // env file tags
-            "@NAMETAG": env.nametag, // env file name with tags
-            "@HOSTNAME": child_process.execSync('hostname').toString().trim(),
+            "@HOSTNAME": getHost(),
         }
+
         for(const [i, file] of Object.entries(docker_files)) {
             if(!file) {
                 console.error(chalk.red(`Error: Could not find docker file for ${pack.pack.json.name}`))
@@ -357,19 +355,48 @@ export const config = async (options: ConfigOptions) => {
     // -------------------- HAPROXY --------------------
     // create haproxy
     const haproxy_output_file_content: {[key: string]: string} = {}
-    // foreach packages
-    for(const [pack_key, pack] of Object.entries(packages)) {
+
+    // foreach env file
+    for(const env of Object.values(envs)) {
+        const pack = Object.values(packages).find(pack => pack.alias == env.alias)
+        if(!pack) {
+            console.error(chalk.red(`Error: Could not find package for ${env.file} via alias ${env.alias}`))
+            continue
+        }
+
         // skip if pack.haproxy.rewrite is false
         const haproxy_input_folder = `${cwd.node_modules}/${pack.pack.json.name}/haproxy/`        
         // check if directory is empty and exists
         if(!fs.existsSync(haproxy_input_folder) || fs.readdirSync(haproxy_input_folder).length === 0) continue
 
         const haproxy_input_files = fs.readdirSync(haproxy_input_folder)
-        
+
+        const appdata_path = path.relative(haproxy_input_folder, appdata)
+        const root_full_path = cwd.workspace || cwd.typestack
+        if(!root_full_path) throw new Error("Missing root_full_path")
+        const root_path = path.relative(haproxy_input_folder, root_full_path)
+        const vars = {
+            ...env.vars,
+            "@ROOT": root_path, // root folder of the project
+            "@ALIAS": pack.alias, // alias of package, used as env file first part
+            "@TAG":env.tag, // env file tags, all after first dot in env file name
+            "@NAMETAG": env.nametag, // combined alias and tag, used as env file name
+            "@PACKAGE": `${root_path}/node_modules/${pack.pack.json.name}`, // full path to package
+            "@DEFAULT": `[${default_env_files?.join(', ')}]`, // all package default env files
+            "@VERSION": pack.pack.json.version, // package version
+            "@SERVICE": `[${service_env_files[pack.pack.json.name]?.join(', ')}]`, // docker package service env files
+            "@APPDATA": `${appdata_path}/docker/${pack.alias}`, // appdata folder for docker package
+            "@HOSTNAME": getHost(),
+        }
+
         for(const haproxy_input_file of haproxy_input_files) {
             const haproxy_input_file_path = `${haproxy_input_folder}/${haproxy_input_file}`
             const file_names = haproxy_input_file.split('.').slice(0, -1)
-            let file_name = `${file_names[0]} ${file_names[1] || ""}`
+
+            let file_name = `${file_names[0]} ${vars['@NAMETAG']}.${file_names.slice(1).join('.')}`
+            if(!file_names.slice(1).join('.')) {
+                file_name = `${file_names[0]}`
+            }
 
             if(!fs.existsSync(haproxy_input_file_path)) {
                 console.error(chalk.red(`Error:\t File ${haproxy_input_file_path} does not exist`))
@@ -377,13 +404,11 @@ export const config = async (options: ConfigOptions) => {
             }
 
             const file_content = fs.readFileSync(haproxy_input_file_path, 'utf8')
-            if(!haproxy_output_file_content[file_name]) haproxy_output_file_content[file_name] = ""
-            
-            // TODO fix append or rewrite
-            if(pack.options.haproxy_rewrite) {
-                haproxy_output_file_content[file_name] = "# " + pack.pack.json.name + ", " + file_name + "\n" + file_content + "\n"
+            if(pack.options.haproxy_rewrite || !haproxy_output_file_content[file_name]) {
+                const template = "# " + pack.pack.json.name + ", " + file_name + "\n" + file_content + "\n"
+                haproxy_output_file_content[file_name] = templateReplace(template, vars, haproxy_input_file, `${pack.pack.json.name}/${env.file}`)
             }else {
-                haproxy_output_file_content[file_name] += "# " + pack.pack.json.name + ", " + file_name + "\n" + file_content + "\n"
+                console.error(chalk.red(`Error:\t File ${haproxy_input_file_path} already exists in output file ${file_name}, skipping rewrite`))
             }
         }
     }

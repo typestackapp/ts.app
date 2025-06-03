@@ -1,0 +1,22 @@
+volumes:
+  ${@NAMETAG}:
+    driver: local
+
+services:
+  ${@NAMETAG}:
+    image: ghcr.io/wg-easy/wg-easy:15.0.0
+    restart: always
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - INIT_ENABLED=true
+      - INIT_HOST=${WGEASY_HOST}
+      - INIT_PORT=${WGEASY_PORT}
+      - INIT_USERNAME=${WGEASY_USERNAME}
+      - INIT_PASSWORD=${WGEASY_PASSWORD}
+      - INIT_IPV4_CIDR=${WGEASY_IPV4_CIDR}
+      - INIT_IPV6_CIDR=${WGEASY_IPV6_CIDR}
+    volumes:
+      - ${@NAMETAG}:/etc/wireguard
+      - /lib/modules:/lib/modules

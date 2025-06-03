@@ -1,12 +1,12 @@
 
 volumes:
-  logship_loki:
+  ${@NAMETAG}.loki:
     driver: local
-  logship_prometheus:
+  ${@NAMETAG}.prometheus:
     driver: local
 
 services:
-  logship_loki:
+  ${@NAMETAG}.loki:
     mem_limit: 1g
     restart: always
     logging:
@@ -14,11 +14,11 @@ services:
     image: grafana/loki:3.5
     volumes:
       - ./config.${@NAMETAG}.server.loki.yml:/etc/loki/local-config.yml
-      - logship_loki:/loki
+      - ${@NAMETAG}.loki:/loki
     command:
       - '-config.file=/etc/loki/local-config.yml'
 
-  logship_prometheus:
+  ${@NAMETAG}.prometheus:
     mem_limit: 1g
     restart: always
     logging:
@@ -26,7 +26,7 @@ services:
     image: prom/prometheus:v3.4.0
     volumes:
       - ./config.${@NAMETAG}.server.prometheus.yml:/etc/prometheus/prometheus.yml
-      - logship_prometheus:/prometheus
+      - ${@NAMETAG}.prometheus:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
