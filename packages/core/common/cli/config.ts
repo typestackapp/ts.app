@@ -313,6 +313,7 @@ export const config = async (options: ConfigOptions) => {
             "@SERVICE": `[${service_env_files[pack.pack.json.name]?.join(', ')}]`, // docker package service env files
             "@APPDATA": `${appdata_path}/docker/${pack.alias}`, // appdata folder for docker package
             "@HOSTNAME": getHost(),
+            "@COMPOSE_PROJECT_NAME": entry.alias, // compose project name
         }
 
         function getOutputFileName(input_file_name: string, keys: string[]){
@@ -385,6 +386,7 @@ export const config = async (options: ConfigOptions) => {
             "@SERVICE": `[${service_env_files[pack.pack.json.name]?.join(', ')}]`, // docker package service env files
             "@APPDATA": `${appdata_path}/docker/${pack.alias}`, // appdata folder for docker package
             "@HOSTNAME": getHost(),
+            "@COMPOSE_PROJECT_NAME": entry.alias, // compose project name
         }
 
         for(const haproxy_input_file of haproxy_input_files) {
