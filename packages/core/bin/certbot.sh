@@ -11,6 +11,10 @@ CERTBOT_INIT=${CERTBOT_INIT:-"false"}
 CERTBOT_SELFSIGNED=${CERTBOT_SELFSIGNED:-"false"}
 
 # Certbot certificates paths
+# cert.pem: Just your server’s certificate (The “leaf” certificate. For example.com, issued by Let's Encrypt.)
+# chain.pem: Just the CA/intermediate certificates (The chain from Let's Encrypt's intermediate to their root.)
+# fullchain.pem: Concatenation of cert.pem + chain.pem (What most servers want as the “public certificate.”)
+# privkey.pem: Your private key (Never share this one!)
 CERTBOT_ROOT="/etc/letsencrypt/live/${SERVER}"
 KEY_SOURCE="${CERTBOT_ROOT}/privkey.pem"
 CHAIN_SOURCE="${CERTBOT_ROOT}/fullchain.pem"
@@ -136,9 +140,9 @@ do
         nginx -s stop || true
 
         # install certs
-        eval "install -c -m 644 ${CHAIN_SOURCE} ${CHAIN_DST}"
         eval "install -c -m 644 ${KEY_SOURCE} ${KEY_DST}"
         eval "install -c -m 644 ${CERT_SOURCE} ${CERT_DST}"
+        cat ${CHAIN_SOURCE} ${KEY_SOURCE} | install -m 644 /dev/stdin ${CHAIN_DST}
     fi
 
     # check if certs are valid
