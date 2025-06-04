@@ -1,10 +1,10 @@
 services:
   ${@NAMETAG}.app:
     depends_on:
-      - mongo
-      - rabbitmq
-      - certbot
-      - haproxy
+      - ${@NAMETAG}.mongo
+      - ${@NAMETAG}.rabbitmq
+      - ${@NAMETAG}.certbot
+      - ${@NAMETAG}.haproxy
     image: typestackapp/ts.app:${@VERSION}
     restart: always
     env_file: ${@DEFAULT}
@@ -77,7 +77,7 @@ services:
 
   ${@NAMETAG}.haproxy:
     depends_on:
-      - certbot
+      - ${@NAMETAG}.certbot
     mem_limit: 3g
     image: haproxy:2.9.6
     restart: always

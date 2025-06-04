@@ -163,20 +163,10 @@ export const config = async (options: ConfigOptions) => {
         [pack_name: string]: {
             [file_name: string]: {
                 input_file_name: string,
-                output_file_name: string,
                 content?: string | Buffer
             } | undefined
         } | undefined
     } = {}
-
-    function getOutputFileName(input_file_name: string, keys: string[]){
-        // split input file name by .
-        const file_parts = input_file_name.split('.')
-        // push extra keys into second position
-        file_parts.splice(1, 0, ...keys)
-        // join file parts by .
-        return file_parts.join('.')
-    }
 
     for(const [pack_alias, pack] of Object.entries(packages)) {
         const pack_name = pack.pack.json.name
@@ -189,7 +179,6 @@ export const config = async (options: ConfigOptions) => {
             try {
                 docker_template_files[pack_name][docker_file] = {
                     input_file_name: docker_file,
-                    output_file_name: getOutputFileName(docker_file, [pack.alias]),
                     content: fs.readFileSync(docker_file_path, 'utf8')
                 }
             }
@@ -326,13 +315,22 @@ export const config = async (options: ConfigOptions) => {
             "@HOSTNAME": getHost(),
         }
 
+        function getOutputFileName(input_file_name: string, keys: string[]){
+            // split input file name by .
+            const file_parts = input_file_name.split('.')
+            // push extra keys into second position
+            file_parts.splice(1, 0, ...keys)
+            // join file parts by .
+            return file_parts.join('.')
+        }
+
         for(const [i, file] of Object.entries(docker_files)) {
             if(!file) {
                 console.error(chalk.red(`Error: Could not find docker file for ${pack.pack.json.name}`))
                 continue
             }
             if(file.input_file_name.startsWith("compose.global.yml")) continue // skip global compose file
-            const output_file_path = `${docker_output_folder}/${file.output_file_name}`
+            const output_file_path = `${docker_output_folder}/${getOutputFileName(file.input_file_name, [vars['@NAMETAG']])}`
             const input_file_path = `${cwd.node_modules}/${pack.pack.json.name}/docker/${file.input_file_name}`
             let global_content: string | Buffer | undefined = undefined
             if(file.input_file_name.startsWith("Dockerfile")) {

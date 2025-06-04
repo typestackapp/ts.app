@@ -1,7 +1,7 @@
 import { ENV, zod } from "@ts.app/core/common/cli/env.js"
 
-export const grafana = new ENV(
-    {   
+export const wgeasy = new ENV(
+    {
         WGEASY_PORT: zod.coerce.number(),
         WGEASY_USERNAME: zod.string(),
         WGEASY_PASSWORD: zod.string(),
