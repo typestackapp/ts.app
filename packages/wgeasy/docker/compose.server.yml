@@ -21,4 +21,4 @@ services:
       - ${@NAMETAG}:/etc/wireguard
       - /lib/modules:/lib/modules
     ports:
-      - ${WGEASY_WG_PORT}:51820/udp
+      - ${WGEASY_WG_PORT}:${WGEASY_WG_PORT}/udp
