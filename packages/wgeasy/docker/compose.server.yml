@@ -11,6 +11,7 @@ services:
       - SYS_MODULE
     environment:
       - INIT_ENABLED=true
+      - INSECURE=false
       - INIT_HOST=${WGEASY_HOST}
       - INIT_PORT=${WGEASY_WG_PORT}
       - INIT_USERNAME=${WGEASY_USERNAME}
@@ -22,3 +23,6 @@ services:
       - /lib/modules:/lib/modules
     ports:
       - ${WGEASY_WG_PORT}:${WGEASY_WG_PORT}/udp
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
