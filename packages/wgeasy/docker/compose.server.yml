@@ -11,7 +11,7 @@ services:
       - SYS_MODULE
     environment:
       - INIT_ENABLED=true
-      - INSECURE=false
+      - INSECURE=true
       - INIT_HOST=${WGEASY_HOST}
       - INIT_PORT=${WGEASY_WG_PORT}
       - INIT_USERNAME=${WGEASY_USERNAME}
