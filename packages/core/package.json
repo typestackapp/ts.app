@@ -109,6 +109,7 @@
     "@trpc/client": "^11.1.2",
     "@trpc/server": "^11.1.2",
     "amqplib": "^0.10.5",
+    "bcrypt": "^6.0.0",
     "chalk": "^5.4.1",
     "clsx": "^2.1.1",
     "compression": "^1.8.0",

@@ -84,9 +84,10 @@ export const mongo = new ENV(
     {
         MONGO_PORT: zod.string(),
         MONGO_IP: zod.string().ip(),
-        MONGO_INITDB_NAME: zod.string(),
-        MONGO_INITDB_ROOT_USERNAME: zod.string(),
-        MONGO_INITDB_ROOT_PASSWORD: zod.string(),
+        MONGO_HOST: zod.string(),
+        MONGO_DB_NAME: zod.string(),
+        MONGO_USERNAME: zod.string(),
+        MONGO_PASSWORD: zod.string(),
         MONGO_KEY_PATH: zod.string(),
         MONGO_DB_PATH: zod.string(),
         MONGO_BIND_IP: zod.string().ip(),
@@ -94,9 +95,10 @@ export const mongo = new ENV(
     {
         MONGO_PORT: "27017",
         MONGO_IP: "10.44.44.43",
-        MONGO_INITDB_NAME: "tsapp",
-        MONGO_INITDB_ROOT_USERNAME: "root",
-        MONGO_INITDB_ROOT_PASSWORD: "root-psw",
+        MONGO_HOST: "core.mongo:27017",
+        MONGO_DB_NAME: "tsapp",
+        MONGO_USERNAME: "root",
+        MONGO_PASSWORD: "root-psw",
         MONGO_KEY_PATH: "/configs/mongo/mongo.key",
         MONGO_DB_PATH: "/data/db/",
         MONGO_BIND_IP: "0.0.0.0"

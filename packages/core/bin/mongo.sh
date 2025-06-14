@@ -65,16 +65,16 @@ fi
 chmod 400 $MONGO_KEY_PATH
 
 # start mongo
-mongod --bind_ip $MONGO_BIND_IP --keyFile $MONGO_KEY_PATH --dbpath $MONGO_DB_PATH --quiet --logpath /dev/null --setParameter logLevel=0 --replSet tsapp &
+mongod --bind_ip $MONGO_BIND_IP --keyFile $MONGO_KEY_PATH --dbpath $MONGO_DB_PATH --quiet --logpath /dev/null --setParameter logLevel=0 --replSet $MONGO_INITDB_NAME &
 
 await_mongodb_ping
 
 echo "--------initiate replica set--------"
 mongosh --host localhost --port 27017 --eval "
 rs.initiate({
-    _id: 'tsapp',
+    _id: '$MONGO_INITDB_NAME',
     members: [
-        { _id: 0, host: 'mongo:27017' } 
+        { _id: 0, host: '$MONGO_HOST' } 
     ],
 });
 "

@@ -23,43 +23,43 @@ export default {
     },
     "services": {
         "next_dev": {
-            "script": "@PACKAGE/common/service/next.js",
+            "script": "@PACKAGE/dist/esm/common/service/next.js",
             "args": "--watch './dist/esm/common/service/next.js'"
         },
         "next_prod": {
-            "script": "@PACKAGE/common/service/next.js",
+            "script": "@PACKAGE/dist/esm/common/service/next.js",
             "args": ""
         },
         "express_dev": {
-            "script": "@PACKAGE/common/service/express.js",
+            "script": "@PACKAGE/dist/esm/common/service/express.js",
             "args": "--watch './packages/*/dist/esm/express/**/*.js' --watch './packages/*/dist/esm/common/**/*.js' --watch './packages/*/dist/esm/models/**/*.js' --watch './codegen/config/output.ts'"
         },
         "express_prod": {
-            "script": "@PACKAGE/common/service/express.js",
+            "script": "@PACKAGE/dist/esm/common/service/express.js",
             "args": ""
         },
         "jobs_dev": {
-            "script": "@PACKAGE/common/service/jobs.js",
+            "script": "@PACKAGE/dist/esm/common/service/jobs.js",
             "args": "--watch './packages/*/dist/esm/common/**/*.js' --watch './packages/*/dist/esm/models/**/*.js' --watch './codegen/config/output.ts'"
         },
         "jobs_prod": {
-            "script": "@PACKAGE/common/service/jobs.js",
+            "script": "@PACKAGE/dist/esm/common/service/jobs.js",
             "args": ""
         },
         "graphql_dev": {
-            "script": "@PACKAGE/common/service/graphql.js",
+            "script": "@PACKAGE/dist/esm/common/service/graphql.js",
             "args": "--watch './packages/*/dist/esm/graphql/**/*' --watch './packages/*/dist/esm/common/**/*.js' --watch './packages/*/dist/esm/models/**/*.js' --watch './codegen/config/output.ts'"
         },
         "graphql_prod": {
-            "script": "@PACKAGE/common/service/graphql.js",
+            "script": "@PACKAGE/dist/esm/common/service/graphql.js",
             "args": ""
         },
         "consumers_dev": {
-            "script": "@PACKAGE/common/service/consumers.js",
+            "script": "@PACKAGE/dist/esm/common/service/consumers.js",
             "args": "--watch './packages/*/dist/esm/consumers/**/*.js' --watch './packages/*/dist/esm/express/**/*.js' --watch './packages/*/dist/esm/common/**/*.js' --watch './packages/*/dist/esm/models/**/*.js' --watch './codegen/config/output.ts'"
         },
         "consumers_prod": {
-            "script": "@PACKAGE/common/service/consumers.js",
+            "script": "@PACKAGE/dist/esm/common/service/consumers.js",
             "args": ""
         }
     }
