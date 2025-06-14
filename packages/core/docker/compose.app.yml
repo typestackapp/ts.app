@@ -33,7 +33,7 @@ services:
       ts_net:
         ipv4_address: ${MONGO_IP}
     volumes:
-      - mongo-db:/data/db/
+      - ${@NAMETAG}.mongo:/data/db/
       - ${@PACKAGE}/bin/:/scripts/
       - ${@APPDATA}/configs/mongo/:/configs/mongo/
     entrypoint: /scripts/mongo.sh
@@ -50,7 +50,7 @@ services:
       ts_net:
         ipv4_address: ${RABBITMQ_IP}
     volumes:
-      - rabbitmq:/var/lib/rabbitmq/
+      - ${@NAMETAG}.rabbitmq:/var/lib/rabbitmq/
 
   ${@NAMETAG}.certbot:
     image: certbot/certbot:latest

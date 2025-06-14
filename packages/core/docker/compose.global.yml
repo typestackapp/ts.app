@@ -7,5 +7,5 @@ networks:
       config:
         - subnet: ${TS_SUBNET}
 volumes:
-  mongo-db:
-  rabbitmq:
+  ${@NAMETAG}.mongo:
+  ${@NAMETAG}.rabbitmq:
