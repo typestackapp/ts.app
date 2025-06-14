@@ -9,7 +9,7 @@ export type PswOptions = {
 /**
  * Generate a password hash for HAProxy, htpasswd, and general usage.
  */
-export const cleanup = async (options: PswOptions) => {
+export const psw = async (options: PswOptions) => {
     const { p, a } = options;
     if (!p) {
         throw new Error('Password is required. Use --p <password> to set it.');

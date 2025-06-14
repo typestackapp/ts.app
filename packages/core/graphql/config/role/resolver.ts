@@ -1,7 +1,6 @@
 import { RoleConfigModel } from "@ts.app/core/models/config/role.js"
 import tscore, { GraphqlContext, GraphqlRouter, IResolvers} from "@ts.app/core"
 
-const config = tscore.config
 export const router = new GraphqlRouter<IResolvers<GraphqlContext>>()
 
 router.resolvers.Query.getAllRoles = {

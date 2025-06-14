@@ -1,6 +1,6 @@
-import tscore, { ExpressRouter } from "@ts.app/core"
+import { ExpressRouter } from "@ts.app/core"
+import tsdev from "@ts.app/dev"
 
-const config = tscore.config["@ts.app/dev"]
 export const router = new ExpressRouter<{
     get: {
         res: { data: boolean } 
@@ -13,7 +13,7 @@ export const router = new ExpressRouter<{
 // GET: /api/dev/test/:any_param || /api/@ts.app/dev/test/:any_param || /api/test/:any_param
 router.get = {
     path: "/api/test/:any_param",
-    access: config.access.Test.getPing,
+    access: tsdev.config.access.Test.getPing,
     resolve: (req, res, next) => {
         req.query.test = "test string"
         req.params.any_param = "any string"
@@ -25,7 +25,7 @@ router.get = {
 
 // POST: /api/dev/test/:any_param || /api/@ts.app/dev/test/:any_param
 router.post = {
-    access: config.access.Test.getPing,
+    access: tsdev.config.access.Test.getPing,
     resolve: [
         (req, res, next) => {
             console.log("post ping")

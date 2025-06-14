@@ -2,7 +2,6 @@ import tscore, { IResolvers } from "@ts.app/core"
 import { GraphqlContext, GraphqlRouter, StreamListener } from "@ts.app/core/common/service.js"
 import * as j from "@ts.app/core/models/job.js"
 
-const config = tscore.config
 export const router = new GraphqlRouter<IResolvers<GraphqlContext>>()
 
 const job_stream = j.JobModel.watch<j.JobDocument<any>>([])

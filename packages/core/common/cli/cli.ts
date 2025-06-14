@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register.js'
 import type { ConfigOptions } from "@ts.app/core/common/cli/config.js"
-import type { ServiceOptions } from "@ts.app/core/common/service/cli.js"
+import type { ServiceOptions } from "@ts.app/core/common/cli/service.js"
 import { GraphqlOptions } from '@ts.app/core/common/cli/graphql.js'
 import { DefaultOptions } from "@ts.app/core/common/cli/util.js"
 import { TypeStack } from '@ts.app/core/common/cli/typestack.js'
@@ -69,7 +69,7 @@ switch(action) {
         .catch(error => console.log(error))
     break
     case 'service':
-        import("@ts.app/core/common/service/cli.js")
+        import("@ts.app/core/common/cli/service.js")
         .then(module => module.service(service_options))
         .catch(error => console.log(error))
     break
@@ -80,7 +80,7 @@ switch(action) {
     break
     case 'psw':
         import("@ts.app/core/common/cli/psw.js")
-        .then(module => module.cleanup(psw_options))
+        .then(module => module.psw(psw_options))
         .catch(error => console.log(error))
     default:
         console.log(`Unknown action: ${action}`)

@@ -11,9 +11,9 @@ import system from "@ts.app/core/configs/system.js"
 import templates from "@ts.app/core/configs/templates.js"
 import timezones from "@ts.app/core/configs/timezones.js"
 import tailwind from "@ts.app/core/configs/tailwind.js"
-import { Package } from "@ts.app/core/common/cli/typestack.js"
+import { Package, ConfigInput } from "@ts.app/core/common/cli/typestack.js"
 
-const configs = { access, countrys, db, env, frontend, graphql, rabbitmq, services, system, templates, timezones, tailwind }
+const configs = { access, countrys, db, env, frontend, graphql, rabbitmq, services, system, templates, timezones, tailwind } satisfies ConfigInput
 const options = { haproxy_rewrite: true, next_disable_alias: true }
 const pack = new Package(packagejson, configs, options)
 
