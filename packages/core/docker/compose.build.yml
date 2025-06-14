@@ -1,5 +1,5 @@
 services:
-  tsapp:
+  ${@NAMETAG}.app:
     image: typestackapp/ts.app:${@VERSION}
     build:
       context: ./

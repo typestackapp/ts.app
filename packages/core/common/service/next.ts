@@ -38,7 +38,12 @@ await TypeStack.init()
 .then(async (config) => {
     const server = express()
     const port = 80
-    const dir = `${config.entrypoint}/appdata/next`
+    const cwd = config.cwd.typestack
+
+    if(!cwd || !fs.existsSync(`${cwd}/appdata/next`))
+        throw new Error(`Next.js appdata directory not found at ${cwd}/appdata/next`)
+
+    const dir = `${cwd}/appdata/next`
     const conf_dir = `${dir}/next.config.js`
     const nextConfig = (await import(conf_dir)).default
 
@@ -52,13 +57,13 @@ await TypeStack.init()
     }
 
     // build next
-    if(next_options.dev == false) await nextBuild(dir)
+    if(next_options.dev == false) await nextBuild(cwd)
 
     const app = next(next_options)
     await app.prepare()
     const handle = app.getRequestHandler()
 
-    server.all("*", (req, res) => {
+    server.all(/(.*)/, (req, res) => {
         return handle(req, res)
     })
 

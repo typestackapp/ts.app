@@ -15,8 +15,8 @@ export async function update(options: UpdateOptions) {
     const session = await tscore.db.mongoose.core.startSession()
     session.startTransaction()
     
-    // sleep for 2 second, fixes Update error: MongoServerError: Unable to acquire IX lock on
-    await sleep(2)
+    // sleep for 3 second, fixes Update error: MongoServerError: Unable to acquire IX lock on
+    await sleep(3)
 
     const pack_updates: UpdateDocument[] = [];
     const pack_errors: UpdateDocument[] = [];
