@@ -1,10 +1,9 @@
 import { TypeStack, ExpressRouter, ExpressResponse, IExpressRouter, TypeStackConfig } from "@ts.app/core"
-import { tsapp, certbot } from "@ts.app/core/configs/env.js"
+import { certbot } from "@ts.app/core/configs/env.js"
 import fs from "fs"
 import express, { Router } from "express"
-import http from "http"
 
-export async function expressLoader(config: TypeStackConfig, server: http.Server) {
+export async function expressLoader(config: TypeStackConfig) {
     const { middleware } = await import("@ts.app/core/models/user/access/middleware.js")
     const router: Router = express.Router()
     const docs: Map<string, IExpressRouter[]> = new Map()

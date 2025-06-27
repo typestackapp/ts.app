@@ -109,11 +109,12 @@ export type CaptchaResponse = {
 
 export const upsertRouterDocs = async function (routers: IExpressRouter[] | IGraphqlRouter[]) {
     const _promsises: Promise<any>[] = []
-
+   
     for(const _router of routers) {
-        const pack = TypeStack.findPackage(_router.options?.pack || '')
+        const pkey = _router?.options?.pack || ''
+        const pack = TypeStack.findPackage(pkey)
         if(!pack) {
-            console.log(`Warning, package not found ${_router.options?.pack}`)
+            console.log(`Warning, package not found ${pkey}`)
             continue
         }
 
@@ -231,6 +232,7 @@ export async function middlewares( req: AccessRequest, options: IAccessOptions )
         await req_log?.addInfo(`middleware-ok`)
         return  { req_log, success: true }
     } catch (err) {
+        console.error(`Error in middleware for ${getResourceInfo(options)}: ${err}`)
         await req_log?.addInfo(error, `${err}`)
         return  { req_log, success: false, error: { code: error, msg: `${err}` } }
     }
@@ -358,7 +360,7 @@ export async function auth( req: AccessRequest, options: IAccessOptions, log?: U
 // middleware for validating captcha request
 async function captcha(req: AccessRequest, options: IAccessOptions): Promise<CaptchaResponse> {
     return new Promise<CaptchaResponse>((resolve, reject) => {
-        return req.captcha = {
+        req.captcha = {
             success: false,
             enabled: false,
             score: 0,
@@ -367,6 +369,8 @@ async function captcha(req: AccessRequest, options: IAccessOptions): Promise<Cap
             hostname: '',
             'error-codes': [`Captcha, is disabled for resource ${getResourceInfo(options)}`]
         }
+
+        resolve(req.captcha)
 
         // TODO move captcha 
         // if(options?.captcha == undefined || options.captcha.enabled == false) return resolve(req.captcha)

@@ -200,7 +200,8 @@ export class ExpressRouter<T extends ExpressHandlers = ExpressHandlers> {
                 // skip map js files
                 if(_path.endsWith(".js.map")) return
 
-                const default_api_route = full_path.replace(_root, "")
+                // remove .js extension from path
+                const default_api_route = full_path.replace(_root, ""). replace(/\.js$/, "")
                 ExpressRouter.setDefaultPath({
                     default_api_route,
                     pack: _pack,

@@ -33,6 +33,10 @@ export const Enabled = `
     enabled: Boolean!
 `
 
+export const EnabledMeybe = `
+    enabled: Boolean
+`
+
 export const DefaultAccessOptions = `
     pack: Packages! # package name
     resource: String # used in checkAccess() to check if user has access to resource
@@ -60,6 +64,13 @@ export const LimitOptions = `
 
 export const ModelOptions = `
     mongoose: String # model name: @ts.app/core/models/config
+`
+
+export const AdminOptions = `
+    title: String!
+    app: String
+    iframe: String
+    icon: String
 `
 
 export const SearchInput = `
@@ -124,6 +135,10 @@ export default `#graphql
 
     interface MongoIdMeybe {
         ${MongoIdMeybe}
+    }
+
+    interface EnabledMeybe {
+        ${EnabledMeybe}
     }
 
     interface MongoTimeStamps {
@@ -237,6 +252,7 @@ export default `#graphql
     }
 
     type ModelOptions {
+        ${Enabled}
         ${ModelOptions}
     }
 
@@ -244,12 +260,28 @@ export default `#graphql
         ${DefaultAccessOptions}
     }
 
+    type AdminOptionsInput {
+        ${EnabledMeybe}
+        ${AdminOptions}
+        hash: String
+    }
+
     type AdminOptions {
+        ${Enabled}
+        ${AdminOptions}
         hash: String!
-        title: String!
-        app: String
-        iframe: String
-        icon: String
+    }
+
+    type AccessOptionsInput implements EnabledMeybe { 
+        log: LogOptions
+        auth: AuthOptions
+        captcha: CaptchaOptions
+        limit: LimitOptions
+        model: ModelOptions
+        admin: AdminOptionsInput
+        info: [String]
+        permission: PermissionType
+        ${EnabledMeybe}
     }
 
     type AccessOptions implements Enabled { 

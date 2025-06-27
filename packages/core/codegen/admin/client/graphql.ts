@@ -66,6 +66,19 @@ export type AccessOptions = Enabled & {
   resourceAction: Scalars['String']['output'];
 };
 
+export type AccessOptionsInput = EnabledMeybe & {
+  __typename?: 'AccessOptionsInput';
+  admin?: Maybe<AdminOptionsInput>;
+  auth?: Maybe<AuthOptions>;
+  captcha?: Maybe<CaptchaOptions>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  info?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  limit?: Maybe<LimitOptions>;
+  log?: Maybe<LogOptions>;
+  model?: Maybe<ModelOptions>;
+  permission?: Maybe<PermissionType>;
+};
+
 export enum AccessStatus {
   Disabled = 'Disabled',
   Enabled = 'Enabled'
@@ -74,7 +87,18 @@ export enum AccessStatus {
 export type AdminOptions = {
   __typename?: 'AdminOptions';
   app?: Maybe<Scalars['String']['output']>;
+  enabled: Scalars['Boolean']['output'];
   hash: Scalars['String']['output'];
+  icon?: Maybe<Scalars['String']['output']>;
+  iframe?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+};
+
+export type AdminOptionsInput = {
+  __typename?: 'AdminOptionsInput';
+  app?: Maybe<Scalars['String']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  hash?: Maybe<Scalars['String']['output']>;
   icon?: Maybe<Scalars['String']['output']>;
   iframe?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
@@ -232,6 +256,10 @@ export type DefaultAccessOptions = {
 
 export type Enabled = {
   enabled: Scalars['Boolean']['output'];
+};
+
+export type EnabledMeybe = {
+  enabled?: Maybe<Scalars['Boolean']['output']>;
 };
 
 export enum ExpressMethod {
@@ -405,6 +433,7 @@ export type LogOptionsInput = {
 
 export type ModelOptions = {
   __typename?: 'ModelOptions';
+  enabled: Scalars['Boolean']['output'];
   mongoose?: Maybe<Scalars['String']['output']>;
 };
 

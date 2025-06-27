@@ -9,7 +9,7 @@ import child_process from 'child_process'
 import { getHost, Module } from '@ts.app/core/common/cli/env.js'
 import path from 'path'
 import moment from 'moment'
-import { TypeStack, CWD, TypeStackPackageWithAlias as Package } from '@ts.app/core/common/cli/typestack.js'
+import { TypeStack, CWD, TypeStackOutputPackage as Package } from '@ts.app/core/common/cli/typestack.js'
 import chalk from 'chalk'
 
 const exec = child_process.execSync

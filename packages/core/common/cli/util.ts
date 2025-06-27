@@ -2,8 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import merge from 'lodash.merge'
 import * as crypto from 'crypto'
-import { IAccessOptions } from '@ts.app/core'
-import { TypeStackConfig, CWD, GraphqlServerInput, GraphqlServerOutput, TypeStack, TypeStackPackage } from '@ts.app/core/common/cli/typestack.js'
+import { IAccessOptions, IAccessOptionsInput } from '@ts.app/core'
+import { TypeStackConfig, CWD, GraphqlServerInput, GraphqlServerOutput, TypeStack, TypeStackPackage, ConfigInput } from '@ts.app/core/common/cli/typestack.js'
 
 type Packages = string
 type GraphqlResovlerModule = any
@@ -37,34 +37,39 @@ export function extractArg(args: any, arg_name: string, required: boolean) {
     return arg_value
 }
 
-export function getDefaultOpts(options: { [key: string]: any }) {
+type Meybe <T> = T | undefined | null
 
-    function isEnabled(input: any, overwrite: any) {
-        if(typeof overwrite == 'boolean') return overwrite
-        if(input == undefined) return undefined
-        if(Array.isArray(input)) return undefined
-        if(Object.keys(input).length == 0) return undefined
-        return true
+export function getDefaultOpts(options: IAccessOptionsInput, pack: string, resource: string, action: string) {
+
+    function isEnabled<T extends Meybe<{ enabled?: Meybe<boolean> }>>(input: T, overwrite?: Meybe<boolean>): boolean | undefined {
+        if (typeof overwrite === 'boolean') return overwrite;
+        if (input == null) return undefined;
+        if (Array.isArray(input)) return undefined;
+        if (Object.keys(input).length === 0) return undefined;
+        return true;
     }
 
-    function getDefault(input: any, defaults: any) {
-        if(input == undefined) return undefined
-        const enabled = isEnabled(input, input?.enabled)
-        if(enabled == undefined) return undefined
+
+    function getDefault<T extends { enabled?: Meybe<boolean> } | null | undefined, Z extends {}>(input: T, defaults: Z) {
+        if (input == null) return undefined;
+
+        const enabled = isEnabled(input, input.enabled);
+        if (enabled == undefined) return undefined;
 
         return {
             ...input,
             ...defaults,
             enabled,
-        }
+        };
     }
 
     return {
         ...options,
-        enabled: isEnabled(options, options?.enabled || true),
-        resource: options.resource,
-        action: options.action,
-        resourceAction: options.resourceAction,
+        enabled: options?.enabled != undefined ? options.enabled : true,
+        pack,
+        resource,
+        action,
+        resourceAction: `${resource}_${action}`,
         auth: getDefault(options.auth, {}),
         limit: getDefault(options.limit, {
             limitInterval: options.limit?.limitInterval || '1m',
@@ -72,11 +77,31 @@ export function getDefaultOpts(options: { [key: string]: any }) {
         }),
         log: getDefault({
             ...options?.log,
-            enabled: options?.log?.enabled != undefined ? options?.log?.enabled : true
-        }, {}),
+            enabled: options?.log?.enabled != undefined ? options.log.enabled : true
+        }, {}) || { enabled: true },
         model: getDefault(options.model, {}),
         captcha: getDefault(options.captcha, {}),
+        admin: getDefault(options.admin, {
+            title: `${pack} ${resource} ${action}`,
+            hash: generateHash(pack+"_"+resource+"_"+action)
+        }) satisfies IAccessOptions['admin'],
+    } satisfies IAccessOptions
+}
+
+export function getAccessDefaults(pack: string, access: ConfigInput['access'] | undefined): ConfigInput['access'] | undefined {
+    const _config = JSON.parse(JSON.stringify(access)) as ConfigInput['access']
+
+    // if empty object
+    if(!_config || Object.keys(_config).length == 0) return _config
+
+    for(const resource_key of Object.keys(_config) ) {
+        const resource = _config[resource_key]
+        for(const action_key of Object.keys(resource) ) {
+            const action = resource[action_key]
+            _config[resource_key][action_key] = getDefaultOpts(_config[resource_key][action_key], pack, resource_key, action_key)
+        }
     }
+    return _config
 }
 
 export function copyConfigs(src_folder: string, dest_folder: string) {
@@ -141,11 +166,7 @@ export function addDefaultValues(obj: any, filename: string, pack: string) {
                 const resource = _config[resource_key]
                 for(const action_key of Object.keys(resource) ) {
                     const action = resource[action_key]
-                    _config[resource_key][action_key]["pack"] = pack
-                    _config[resource_key][action_key]["resource"] = resource_key
-                    _config[resource_key][action_key]["action"] = action_key;
-                    _config[resource_key][action_key]["resourceAction"] = `${resource_key}_${action_key}`
-                    _config[resource_key][action_key] = getDefaultOpts(_config[resource_key][action_key])
+                    _config[resource_key][action_key] = getDefaultOpts(_config[resource_key][action_key], pack, resource_key, action_key)
                 }
             }
             return _config

@@ -1,9 +1,12 @@
 import { ENV, zod } from "@ts.app/core/common/cli/env.js"
+import { randomSecret } from "@ts.app/core/models/user/access/util.js"
+import { createHash } from "crypto"
 
 export const tsapp = new ENV(
     {
         TS_ENV_TYPE: zod.string(),
         TS_ENTRY_POINT: zod.string(),
+        TS_AUTH_SECRET: zod.string(),
         TS_PORT: zod.string(),
         TS_IP: zod.string().ip(),
         TS_VOLUME: zod.string().default('["../../../../:/tsapp/"]'),
@@ -19,6 +22,7 @@ export const tsapp = new ENV(
     {
         TS_ENV_TYPE: "dev",
         TS_ENTRY_POINT: "/tsapp/packages/dev",
+        TS_AUTH_SECRET: createHash('sha256').update(randomSecret(32)).digest('hex'),
         TS_PORT: "7443",
         TS_IP: "10.44.44.44",
         TS_VOLUME: '["../../../../:/tsapp/"]',

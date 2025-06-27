@@ -1,4 +1,6 @@
-export default {
+import { AccessConfigInput } from "@ts.app/core";
+
+export default  {
     "Test": {
         "getPing": {
             "info": [ "everyone is able to ping server" ]
@@ -24,4 +26,4 @@ export default {
             "permission": "Read"
         }
     }
-}
+} satisfies AccessConfigInput

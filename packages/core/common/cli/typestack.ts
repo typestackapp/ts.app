@@ -7,7 +7,7 @@ import type { JobList } from '@ts.app/core/common/job.js'
 // import type { IAccessOptions } from "@ts.app/core/codegen/admin/index.js"
 
 import { tsapp } from "@ts.app/core/configs/env.js"
-import { getPackageConfigs } from '@ts.app/core/common/cli/util.js'
+import { getAccessDefaults, getPackageConfigs } from '@ts.app/core/common/cli/util.js'
 import { ExpressRouter, GraphqlRouter } from '@ts.app/core/common/service.js'
 import { PackageJson } from '@ts.app/core/common/cli/typedefs.js'
 import DB from '@ts.app/core/common/db.js'
@@ -186,12 +186,15 @@ export class TypeStackPackage<Pack extends Package<PackageJson, ConfigInput> = P
     }
 }
 
-export class TypeStackPackageWithAlias extends TypeStackPackage {
+export class TypeStackOutputPackage extends TypeStackPackage {
     alias: string
 
     constructor(pack: TypeStackPackage, alias: string) {
         super(pack.pack, pack.options)
         this.alias = alias
+
+        if(this.pack._config.access)
+            this.pack._config.access = getAccessDefaults(this.pack.json.name, this.pack._config.access)
     }
 }
 
@@ -201,11 +204,11 @@ export type TypeStackEntryPoint<T extends TypeStackPackage = TypeStackPackage> =
 
 // convert TypeStackEntryPoint to TypeStackEntryPointWithAlias
 export type ConvertToEntryPointWithAlias<T extends TypeStackEntryPoint<TypeStackPackage>> = {
-    [K in keyof T]: TypeStackPackageWithAlias;
+    [K in keyof T]: TypeStackOutputPackage;
   };
   
 
-export type TypeStackEntryPointWithAlias<T extends TypeStackPackageWithAlias = TypeStackPackageWithAlias> = {
+export type TypeStackEntryPointWithAlias<T extends TypeStackOutputPackage = TypeStackOutputPackage> = {
     [key: string]: T
 }
 
@@ -214,7 +217,7 @@ export type CWD = ReturnType<typeof TypeStack["findCWD"]>
 export type TypeStackConfig<T extends TypeStackEntryPointWithAlias = TypeStackEntryPointWithAlias> = {
     cwd: CWD;
     packages: T;
-    entrypoint: TypeStackPackageWithAlias;
+    entrypoint: TypeStackOutputPackage;
 }
 
 export class TypeStack {
@@ -272,7 +275,7 @@ export class TypeStack {
         const packages_raw = mdoule.default as TypeStackEntryPoint
 
         let packages: TypeStackEntryPointWithAlias = {}
-        let entrypoint: TypeStackPackageWithAlias | undefined = undefined
+        let entrypoint: TypeStackOutputPackage | undefined = undefined
         for(const [alias, value] of Object.entries(packages_raw)) {
             const pack_name = value.pack.json.name
             if(value.options.enabled) {
@@ -280,7 +283,7 @@ export class TypeStack {
                 if(packages[pack_name]) {
                     throw new Error(`Package with name ${alias}->${pack_name} is already included in typestack.ts under alias ${packages[pack_name].alias}`)
                 }
-                packages[pack_name] = new TypeStackPackageWithAlias(value, alias)
+                packages[pack_name] = new TypeStackOutputPackage(value, alias)
             }
             if(pack_name === cwd.entrypoint) {
                 entrypoint = packages[pack_name]
@@ -303,6 +306,12 @@ export class TypeStack {
 
     static findCWD(defaultWorkspace: string | undefined = undefined, defaultTypestack: string | undefined = undefined)  {
         let dir = process.cwd()
+
+        // if env var exists use it TS_ENTRY_POINT
+        if(tsapp.env.TS_ENTRY_POINT && tsapp.env.TS_ENTRY_POINT !== '') {
+            dir = tsapp.env.TS_ENTRY_POINT
+        }
+
         let workspace: string | undefined // folder path to closest workspace package.json
         let typestack: string | undefined // folder path to closest typestack.json
         let entrypoint: string | undefined // typestack entrypoint package name
@@ -363,7 +372,7 @@ export class TypeStack {
         }
     }
 
-    static findPackage(package_name: string): TypeStackPackageWithAlias | undefined {
+    static findPackage(package_name: string): TypeStackOutputPackage | undefined {
         for(const [alias, value] of Object.entries(this.config.packages)) {
             if(value.pack.json.name == package_name){
                 return value

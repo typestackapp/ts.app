@@ -12,7 +12,7 @@ await TypeStack.init()
     app.use(express.urlencoded({ extended: true , limit: "100mb" }))
 
     // load express routers
-    const {docs, router} = await expressLoader(config, server)
+    const {docs, router} = await expressLoader(config)
     app.use(router)
 
     // update router docs in db

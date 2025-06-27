@@ -32,7 +32,7 @@ describe('Test ExpressRouter', () => {
 describe('Test services', () => {
     // should have @ts.app/dev package installed
     it('should have @ts.app/dev package installed', async () => {
-        expect(TypeStack.config.packages["dev"].pack.json.name).to.include("@ts.app/dev")
+        expect(Object.keys(TypeStack.config.packages)).to.include("@ts.app/dev")
     })
 
     it('should reach api endpoint', async () => {

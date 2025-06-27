@@ -1,9 +1,8 @@
-import bcrypt from 'bcrypt';
-import { createHash } from 'crypto';
+import { createHash, pbkdf2Sync, randomBytes } from 'crypto';
 
 export type PswOptions = {
     p?: string;
-    a: 'bcrypt' | 'sha256';
+    a: 'pbkdf2' | 'sha256';
 };
 
 /**
@@ -17,13 +16,14 @@ export const psw = async (options: PswOptions) => {
 
     let hashed: string;
 
-    if (a === 'bcrypt') {
-        // bcrypt (default 10 rounds)
-        hashed = await bcrypt.hash(p, 10);
+    if (a === 'pbkdf2') {
+        // PBKDF2 with SHA512 (recommended replacement for bcrypt)
+        const salt = randomBytes(16).toString('hex');
+        const hash = pbkdf2Sync(p, salt, 100000, 64, 'sha512').toString('hex');
+        hashed = `${salt}$${hash}`;
     } else if (a === 'sha256') {
-        // fallback to SHA256
-        const sha256 = createHash('sha256').update(p).digest('hex');
-        hashed = sha256;
+        // Simple SHA256 hash (not salted)
+        hashed = createHash('sha256').update(p).digest('hex');
     } else {
         throw new Error(`Unsupported algorithm: ${a}`);
     }

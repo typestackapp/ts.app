@@ -2,7 +2,8 @@ import { DBConnectionInput } from '@ts.app/core/common/db'
 import { U as Tailwind } from 'tailwindcss/dist/types-B254mqw1.mjs'
 import { Module } from '@ts.app/core/common/cli/env'
 import { RMQConnectionInput } from '@ts.app/core/common/rabbitmq/connection'
-import { IAccessOptions, IAdminOptions } from '@ts.app/core'
+import { IAccessOptions, IAccessOptionsInput, IAdminOptions } from '@ts.app/core'
+import { AuthOptions } from 'next-auth'
 
 // options from graphql.json config file
 export interface GraphqlServerInput {
@@ -31,11 +32,6 @@ export type TailwindInput = {
     config: Tailwind
 }
 
-export interface AccessInput {
-    info?: string[]
-    admin?: Omit<IAdminOptions, "hash">
-}
-
 interface ServiceConfig {
     template: string;
     service: string;
@@ -59,9 +55,11 @@ export interface ServiceConfigInput {
     };
 }
 
+export type AccessConfigInput = {[resource: string]: {[action: string]: IAccessOptionsInput}}
+
 export type ConfigInput = {
     [key: string]: unknown // any package can have additional custom config
-    access?: {[resource: string]: {[action: string]: AccessInput}}
+    access?: AccessConfigInput
     countrys?: any
     db?: DBConnectionInput
     env?: Module
@@ -73,6 +71,7 @@ export type ConfigInput = {
     templates?: any
     timezones?: any
     tailwind?: {[name: string]: TailwindInput}
+    auth?: AuthOptions
 }
 
 export type ConfigOutput<T extends ConfigInput> = {

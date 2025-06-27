@@ -49,7 +49,7 @@ const default_options: DefaultOptions = {
 
 const psw_options: PswOptions = {
     p: argv.p,
-    a: argv.a || 'bcrypt'
+    a: argv.a || 'pbkdf2'
 }
 
 switch(action) {
