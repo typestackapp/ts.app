@@ -32,7 +32,7 @@
   "JobStepInput",
   "LimitOptions",
   "LogOptions",
-  "LogOptionsDocument",
+  "LogOptions",
   "LogOptionsInput",
   "ModelOptions",
   "MongoId",

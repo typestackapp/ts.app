@@ -69,13 +69,13 @@ export type AccessOptions = Enabled & {
 export type AccessOptionsInput = EnabledMeybe & {
   __typename?: 'AccessOptionsInput';
   admin?: Maybe<AdminOptionsInput>;
-  auth?: Maybe<AuthOptions>;
-  captcha?: Maybe<CaptchaOptions>;
+  auth?: Maybe<AuthOptionsInput>;
+  captcha?: Maybe<CaptchaOptionsInput>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
   info?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  limit?: Maybe<LimitOptions>;
-  log?: Maybe<LogOptions>;
-  model?: Maybe<ModelOptions>;
+  limit?: Maybe<LimitOptionsInput>;
+  log?: Maybe<LogOptionsInput>;
+  model?: Maybe<ModelOptionsInput>;
   permission?: Maybe<PermissionType>;
 };
 
@@ -111,9 +111,23 @@ export type AuthOptions = Enabled & {
   tokens: Array<TokenType>;
 };
 
+export type AuthOptionsInput = EnabledMeybe & {
+  __typename?: 'AuthOptionsInput';
+  authParamKeyName?: Maybe<Scalars['String']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  tokens: Array<TokenType>;
+};
+
 export type CaptchaOptions = Enabled & {
   __typename?: 'CaptchaOptions';
   enabled: Scalars['Boolean']['output'];
+  pack: Scalars['Packages']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type CaptchaOptionsInput = EnabledMeybe & {
+  __typename?: 'CaptchaOptionsInput';
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   pack: Scalars['Packages']['output'];
   type: Scalars['String']['output'];
 };
@@ -132,7 +146,7 @@ export type ConfigDocument = {
   _id?: Maybe<Scalars['ObjectId']['output']>;
   created_by: Scalars['ObjectId']['output'];
   data?: Maybe<Scalars['Object']['output']>;
-  log: LogOptionsDocument;
+  log: LogOptions;
   pack: Scalars['Packages']['output'];
   title: Scalars['String']['output'];
   type: Scalars['String']['output'];
@@ -141,7 +155,7 @@ export type ConfigDocument = {
 
 export type ConfigDocumentBase = {
   __typename?: 'ConfigDocumentBase';
-  log: LogOptionsDocument;
+  log: LogOptions;
   pack: Scalars['Packages']['output'];
   type: Scalars['String']['output'];
 };
@@ -162,7 +176,7 @@ export type ConfigOutput = MongoTimeStamps & {
   createdAt: Scalars['DateTime']['output'];
   created_by: Scalars['ObjectId']['output'];
   data?: Maybe<Scalars['Object']['output']>;
-  log: LogOptionsDocument;
+  log: LogOptions;
   pack: Scalars['Packages']['output'];
   title: Scalars['String']['output'];
   type: Scalars['String']['output'];
@@ -182,7 +196,7 @@ export type ConfigSearch = MongoTimeStamps & SearchScore & {
   createdAt: Scalars['DateTime']['output'];
   created_by: Scalars['ObjectId']['output'];
   data?: Maybe<Scalars['Object']['output']>;
-  log: LogOptionsDocument;
+  log: LogOptions;
   pack: Scalars['Packages']['output'];
   score?: Maybe<Scalars['Float']['output']>;
   title: Scalars['String']['output'];
@@ -336,7 +350,7 @@ export type JobDocument = JobBase & MongoId & MongoTimeStamps & {
   data?: Maybe<Scalars['Object']['output']>;
   description: Scalars['String']['output'];
   error?: Maybe<Scalars['String']['output']>;
-  log: LogOptionsDocument;
+  log: LogOptions;
   pack: Scalars['Packages']['output'];
   params: Scalars['Object']['output'];
   parent_id?: Maybe<Scalars['ObjectId']['output']>;
@@ -416,24 +430,34 @@ export type LimitOptions = Enabled & {
   limitTreshold: Scalars['Int']['output'];
 };
 
+export type LimitOptionsInput = EnabledMeybe & {
+  __typename?: 'LimitOptionsInput';
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  limitInterval: Scalars['String']['output'];
+  limitTreshold: Scalars['Int']['output'];
+};
+
 export type LogOptions = Enabled & {
   __typename?: 'LogOptions';
   enabled: Scalars['Boolean']['output'];
+  max?: Maybe<Scalars['Int']['output']>;
 };
 
-export type LogOptionsDocument = {
-  enabled: Scalars['Boolean']['output'];
-  max: Scalars['Int']['output'];
-};
-
-export type LogOptionsInput = {
+export type LogOptionsInput = EnabledMeybe & {
+  __typename?: 'LogOptionsInput';
   enabled?: Maybe<Scalars['Boolean']['output']>;
   max?: Maybe<Scalars['Int']['output']>;
 };
 
-export type ModelOptions = {
+export type ModelOptions = Enabled & {
   __typename?: 'ModelOptions';
   enabled: Scalars['Boolean']['output'];
+  mongoose?: Maybe<Scalars['String']['output']>;
+};
+
+export type ModelOptionsInput = EnabledMeybe & {
+  __typename?: 'ModelOptionsInput';
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   mongoose?: Maybe<Scalars['String']['output']>;
 };
 
@@ -631,7 +655,7 @@ export type RoleConfigDocument = MongoTimeStamps & {
   createdAt: Scalars['DateTime']['output'];
   created_by: Scalars['ObjectId']['output'];
   data: RoleConfigDataDocument;
-  log: LogOptionsDocument;
+  log: LogOptions;
   pack: Scalars['Packages']['output'];
   title: Scalars['String']['output'];
   type: Scalars['String']['output'];

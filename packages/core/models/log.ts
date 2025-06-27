@@ -1,5 +1,5 @@
 import { Schema, Document, Model, Types, FlattenMaps } from "mongoose"
-import tscore, { type ILogOptionsDocument, type ILogOptionsInput } from "@ts.app/core"
+import tscore, { type ILogOptions, type ILogOptionsInput } from "@ts.app/core"
 import type { MongooseDocument } from "@ts.app/core/models/util.js"
 
 /**
@@ -12,13 +12,13 @@ import type { MongooseDocument } from "@ts.app/core/models/util.js"
  * log.max - maximum number of logs to keep
  */
 
-export interface LogOptionsDocument extends ILogOptionsDocument {
+export interface LogOptions extends ILogOptions {
     add(doc: Document): Promise<null | LogDocument>
 }
 export interface LogOptionsInput extends ILogOptionsInput {}
-export const logOptionsSchema = new Schema<LogOptionsDocument, Model<LogOptionsDocument>, LogOptionsDocument>({
+export const logOptionsSchema = new Schema<LogOptions, Model<LogOptions>, LogOptions>({
     enabled: { type: Boolean, required: true, index: true, default: true },
-    max: { type: Number, required: true, index: true, default: 1000 },
+    max: { type: Number, required: false, index: true, default: 1000 },
 },{ _id: false })
 
 export type LogInput = {
@@ -45,7 +45,7 @@ logSchema.pre('validate', function(next) {
 })
 
 logOptionsSchema.methods.add = async function(doc) {
-    if(this.max != 0) {
+    if(this.max) {
         // get total count of documents
         const count = await LogModel.countDocuments({'doc._id': doc._id})
 

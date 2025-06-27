@@ -2,7 +2,7 @@
 import { Document, Model, Schema, Types } from "mongoose"
 import tscore, { GraphObj, IJobInput, IJobDocument } from "@ts.app/core"
 import { IJobActionInput, IJobStepInput } from "@ts.app/core"
-import { LogOptionsDocument, logOptionsSchema } from "@ts.app/core/models/log.js"
+import { LogOptions, logOptionsSchema } from "@ts.app/core/models/log.js"
 import { MongooseDocument } from "@ts.app/core/models/util.js"
 
 export interface JobInput<TParams extends GraphObj, TData extends GraphObj | undefined = undefined> extends IJobInput { _id?: Types.ObjectId, params: TParams, data: TData }
@@ -17,7 +17,7 @@ export interface JobDocument<TParams extends GraphObj, TData extends GraphObj | 
     _id: Types.ObjectId
     params: TParams,
     data: TData,
-    log: LogOptionsDocument,
+    log: LogOptions,
     onTick: () => Promise<void>
     action: () => Promise<JobActionDocument>
 }

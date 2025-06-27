@@ -49,9 +49,6 @@ export const AuthOptions = `
     tokens: [TokenType!]! # token types: ApiKey | Bearer | Basic, default: Bearer
 `
 
-export const LogOptions = `
-`
-
 export const CaptchaOptions = `
     pack: Packages! # package name
     type: String! # captcha configuration type from config captcha.key
@@ -89,13 +86,7 @@ export const AccessInput = `
     updated_by: ObjectId
 `
 
-export const LogOptionsDocument = `
-    enabled: Boolean!
-    max: Int!
-`
-
 export const LogOptionsInput = `
-    enabled: Boolean
     max: Int
 `
 
@@ -135,10 +126,6 @@ export default `#graphql
 
     interface MongoIdMeybe {
         ${MongoIdMeybe}
-    }
-
-    interface EnabledMeybe {
-        ${EnabledMeybe}
     }
 
     interface MongoTimeStamps {
@@ -215,20 +202,25 @@ export default `#graphql
         changedRows: Int
     }
 
-    interface LogOptionsInput {
-        ${LogOptionsInput}
-    }
-
-    interface LogOptionsDocument {
-        ${LogOptionsDocument}
-    }
-
     interface Enabled {
         ${Enabled}
     }
 
+    interface EnabledMeybe {
+        ${EnabledMeybe}
+    }
+
     interface ServerAccess {
         ${ServerAccess}
+    }
+
+    type DefaultAccessOptions {
+        ${DefaultAccessOptions}
+    }
+
+    type AuthOptionsInput implements EnabledMeybe {
+        ${EnabledMeybe}
+        ${AuthOptions}
     }
 
     type AuthOptions implements Enabled {
@@ -236,9 +228,19 @@ export default `#graphql
         ${AuthOptions}
     }
 
+    type LogOptionsInput implements EnabledMeybe {
+        ${EnabledMeybe}
+        ${LogOptionsInput}
+    }
+
     type LogOptions implements Enabled {
         ${Enabled}
-        ${LogOptions}
+        ${LogOptionsInput}
+    }
+
+    type CaptchaOptionsInput implements EnabledMeybe {
+        ${EnabledMeybe}
+        ${CaptchaOptions}
     }
 
     type CaptchaOptions implements Enabled {
@@ -246,18 +248,24 @@ export default `#graphql
         ${CaptchaOptions}
     }
 
+    type LimitOptionsInput implements EnabledMeybe {
+        ${EnabledMeybe}
+        ${LimitOptions}
+    }
+
     type LimitOptions implements Enabled {
         ${Enabled}
         ${LimitOptions}
     }
 
-    type ModelOptions {
-        ${Enabled}
+    type ModelOptionsInput implements EnabledMeybe {
+        ${EnabledMeybe}
         ${ModelOptions}
     }
 
-    type DefaultAccessOptions {
-        ${DefaultAccessOptions}
+    type ModelOptions implements Enabled {
+        ${Enabled}
+        ${ModelOptions}
     }
 
     type AdminOptionsInput {
@@ -273,11 +281,11 @@ export default `#graphql
     }
 
     type AccessOptionsInput implements EnabledMeybe { 
-        log: LogOptions
-        auth: AuthOptions
-        captcha: CaptchaOptions
-        limit: LimitOptions
-        model: ModelOptions
+        log: LogOptionsInput
+        auth: AuthOptionsInput
+        captcha: CaptchaOptionsInput
+        limit: LimitOptionsInput
+        model: ModelOptionsInput
         admin: AdminOptionsInput
         info: [String]
         permission: PermissionType

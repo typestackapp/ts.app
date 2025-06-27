@@ -8,7 +8,7 @@ export const ConfigBase = `
 `
 
 export const ConfigDocumentBase = `
-    log: LogOptionsDocument!
+    log: LogOptions!
     pack: Packages!
     type: String!
 `

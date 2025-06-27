@@ -67,13 +67,13 @@ export interface IAccessOptions extends IEnabled {
 
 export interface IAccessOptionsInput extends IEnabledMeybe {
   admin?: Maybe<IAdminOptionsInput>;
-  auth?: Maybe<IAuthOptions>;
-  captcha?: Maybe<ICaptchaOptions>;
+  auth?: Maybe<IAuthOptionsInput>;
+  captcha?: Maybe<ICaptchaOptionsInput>;
   enabled?: Maybe<Scalars['Boolean']['output']>;
   info?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  limit?: Maybe<ILimitOptions>;
-  log?: Maybe<ILogOptions>;
-  model?: Maybe<IModelOptions>;
+  limit?: Maybe<ILimitOptionsInput>;
+  log?: Maybe<ILogOptionsInput>;
+  model?: Maybe<IModelOptionsInput>;
   permission?: Maybe<IPermissionType>;
 }
 
@@ -105,8 +105,20 @@ export interface IAuthOptions extends IEnabled {
   tokens: Array<ITokenType>;
 }
 
+export interface IAuthOptionsInput extends IEnabledMeybe {
+  authParamKeyName?: Maybe<Scalars['String']['output']>;
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  tokens: Array<ITokenType>;
+}
+
 export interface ICaptchaOptions extends IEnabled {
   enabled: Scalars['Boolean']['output'];
+  pack: Scalars['Packages']['output'];
+  type: Scalars['String']['output'];
+}
+
+export interface ICaptchaOptionsInput extends IEnabledMeybe {
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   pack: Scalars['Packages']['output'];
   type: Scalars['String']['output'];
 }
@@ -148,22 +160,29 @@ export interface ILimitOptions extends IEnabled {
   limitTreshold: Scalars['Int']['output'];
 }
 
+export interface ILimitOptionsInput extends IEnabledMeybe {
+  enabled?: Maybe<Scalars['Boolean']['output']>;
+  limitInterval: Scalars['String']['output'];
+  limitTreshold: Scalars['Int']['output'];
+}
+
 export interface ILogOptions extends IEnabled {
   enabled: Scalars['Boolean']['output'];
+  max?: Maybe<Scalars['Int']['output']>;
 }
 
-export interface ILogOptionsDocument {
-  enabled: Scalars['Boolean']['output'];
-  max: Scalars['Int']['output'];
-}
-
-export interface ILogOptionsInput {
+export interface ILogOptionsInput extends IEnabledMeybe {
   enabled?: Maybe<Scalars['Boolean']['output']>;
   max?: Maybe<Scalars['Int']['output']>;
 }
 
-export interface IModelOptions {
+export interface IModelOptions extends IEnabled {
   enabled: Scalars['Boolean']['output'];
+  mongoose?: Maybe<Scalars['String']['output']>;
+}
+
+export interface IModelOptionsInput extends IEnabledMeybe {
+  enabled?: Maybe<Scalars['Boolean']['output']>;
   mongoose?: Maybe<Scalars['String']['output']>;
 }
 
@@ -407,10 +426,8 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping of interface types */
 export type IResolversInterfaceTypes<_RefType extends Record<string, unknown>> = {
   AccessInput: ( IAccessDocument );
-  Enabled: ( IAccessOptions ) | ( IAuthOptions ) | ( ICaptchaOptions ) | ( ILimitOptions ) | ( ILogOptions );
-  EnabledMeybe: ( IAccessOptionsInput );
-  LogOptionsDocument: never;
-  LogOptionsInput: never;
+  Enabled: ( IAccessOptions ) | ( IAuthOptions ) | ( ICaptchaOptions ) | ( ILimitOptions ) | ( ILogOptions ) | ( IModelOptions );
+  EnabledMeybe: ( IAccessOptionsInput ) | ( IAuthOptionsInput ) | ( ICaptchaOptionsInput ) | ( ILimitOptionsInput ) | ( ILogOptionsInput ) | ( IModelOptionsInput );
   MongoId: never;
   MongoIdMeybe: never;
   MongoTimeStamps: ( IMongoTimeStampsType );
@@ -430,8 +447,10 @@ export type IResolversTypes = {
   AdminOptions: ResolverTypeWrapper<IAdminOptions>;
   AdminOptionsInput: ResolverTypeWrapper<IAdminOptionsInput>;
   AuthOptions: ResolverTypeWrapper<IAuthOptions>;
+  AuthOptionsInput: ResolverTypeWrapper<IAuthOptionsInput>;
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   CaptchaOptions: ResolverTypeWrapper<ICaptchaOptions>;
+  CaptchaOptionsInput: ResolverTypeWrapper<ICaptchaOptionsInput>;
   DateTime: ResolverTypeWrapper<Scalars['DateTime']['output']>;
   DefaultAccessOptions: ResolverTypeWrapper<IDefaultAccessOptions>;
   Enabled: ResolverTypeWrapper<IResolversInterfaceTypes<IResolversTypes>['Enabled']>;
@@ -441,10 +460,11 @@ export type IResolversTypes = {
   GraphqlMethod: IGraphqlMethod;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   LimitOptions: ResolverTypeWrapper<ILimitOptions>;
+  LimitOptionsInput: ResolverTypeWrapper<ILimitOptionsInput>;
   LogOptions: ResolverTypeWrapper<ILogOptions>;
-  LogOptionsDocument: ResolverTypeWrapper<IResolversInterfaceTypes<IResolversTypes>['LogOptionsDocument']>;
-  LogOptionsInput: ResolverTypeWrapper<IResolversInterfaceTypes<IResolversTypes>['LogOptionsInput']>;
+  LogOptionsInput: ResolverTypeWrapper<ILogOptionsInput>;
   ModelOptions: ResolverTypeWrapper<IModelOptions>;
+  ModelOptionsInput: ResolverTypeWrapper<IModelOptionsInput>;
   MongoId: ResolverTypeWrapper<IResolversInterfaceTypes<IResolversTypes>['MongoId']>;
   MongoIdMeybe: ResolverTypeWrapper<IResolversInterfaceTypes<IResolversTypes>['MongoIdMeybe']>;
   MongoOperationType: IMongoOperationType;
@@ -484,8 +504,10 @@ export type IResolversParentTypes = {
   AdminOptions: IAdminOptions;
   AdminOptionsInput: IAdminOptionsInput;
   AuthOptions: IAuthOptions;
+  AuthOptionsInput: IAuthOptionsInput;
   Boolean: Scalars['Boolean']['output'];
   CaptchaOptions: ICaptchaOptions;
+  CaptchaOptionsInput: ICaptchaOptionsInput;
   DateTime: Scalars['DateTime']['output'];
   DefaultAccessOptions: IDefaultAccessOptions;
   Enabled: IResolversInterfaceTypes<IResolversParentTypes>['Enabled'];
@@ -493,10 +515,11 @@ export type IResolversParentTypes = {
   Float: Scalars['Float']['output'];
   Int: Scalars['Int']['output'];
   LimitOptions: ILimitOptions;
+  LimitOptionsInput: ILimitOptionsInput;
   LogOptions: ILogOptions;
-  LogOptionsDocument: IResolversInterfaceTypes<IResolversParentTypes>['LogOptionsDocument'];
-  LogOptionsInput: IResolversInterfaceTypes<IResolversParentTypes>['LogOptionsInput'];
+  LogOptionsInput: ILogOptionsInput;
   ModelOptions: IModelOptions;
+  ModelOptionsInput: IModelOptionsInput;
   MongoId: IResolversInterfaceTypes<IResolversParentTypes>['MongoId'];
   MongoIdMeybe: IResolversInterfaceTypes<IResolversParentTypes>['MongoIdMeybe'];
   MongoStream: Omit<IMongoStream, 'documentKey'> & { documentKey: IResolversParentTypes['MongoId'] };
@@ -565,13 +588,13 @@ export type IAccessOptionsResolvers<ContextType = any, ParentType extends IResol
 
 export type IAccessOptionsInputResolvers<ContextType = any, ParentType extends IResolversParentTypes['AccessOptionsInput'] = IResolversParentTypes['AccessOptionsInput']> = {
   admin?: Resolver<Maybe<IResolversTypes['AdminOptionsInput']>, ParentType, ContextType>;
-  auth?: Resolver<Maybe<IResolversTypes['AuthOptions']>, ParentType, ContextType>;
-  captcha?: Resolver<Maybe<IResolversTypes['CaptchaOptions']>, ParentType, ContextType>;
+  auth?: Resolver<Maybe<IResolversTypes['AuthOptionsInput']>, ParentType, ContextType>;
+  captcha?: Resolver<Maybe<IResolversTypes['CaptchaOptionsInput']>, ParentType, ContextType>;
   enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
   info?: Resolver<Maybe<Array<Maybe<IResolversTypes['String']>>>, ParentType, ContextType>;
-  limit?: Resolver<Maybe<IResolversTypes['LimitOptions']>, ParentType, ContextType>;
-  log?: Resolver<Maybe<IResolversTypes['LogOptions']>, ParentType, ContextType>;
-  model?: Resolver<Maybe<IResolversTypes['ModelOptions']>, ParentType, ContextType>;
+  limit?: Resolver<Maybe<IResolversTypes['LimitOptionsInput']>, ParentType, ContextType>;
+  log?: Resolver<Maybe<IResolversTypes['LogOptionsInput']>, ParentType, ContextType>;
+  model?: Resolver<Maybe<IResolversTypes['ModelOptionsInput']>, ParentType, ContextType>;
   permission?: Resolver<Maybe<IResolversTypes['PermissionType']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -603,8 +626,22 @@ export type IAuthOptionsResolvers<ContextType = any, ParentType extends IResolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type IAuthOptionsInputResolvers<ContextType = any, ParentType extends IResolversParentTypes['AuthOptionsInput'] = IResolversParentTypes['AuthOptionsInput']> = {
+  authParamKeyName?: Resolver<Maybe<IResolversTypes['String']>, ParentType, ContextType>;
+  enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
+  tokens?: Resolver<Array<IResolversTypes['TokenType']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type ICaptchaOptionsResolvers<ContextType = any, ParentType extends IResolversParentTypes['CaptchaOptions'] = IResolversParentTypes['CaptchaOptions']> = {
   enabled?: Resolver<IResolversTypes['Boolean'], ParentType, ContextType>;
+  pack?: Resolver<IResolversTypes['Packages'], ParentType, ContextType>;
+  type?: Resolver<IResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type ICaptchaOptionsInputResolvers<ContextType = any, ParentType extends IResolversParentTypes['CaptchaOptionsInput'] = IResolversParentTypes['CaptchaOptionsInput']> = {
+  enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
   pack?: Resolver<IResolversTypes['Packages'], ParentType, ContextType>;
   type?: Resolver<IResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -623,12 +660,12 @@ export type IDefaultAccessOptionsResolvers<ContextType = any, ParentType extends
 };
 
 export type IEnabledResolvers<ContextType = any, ParentType extends IResolversParentTypes['Enabled'] = IResolversParentTypes['Enabled']> = {
-  __resolveType: TypeResolveFn<'AccessOptions' | 'AuthOptions' | 'CaptchaOptions' | 'LimitOptions' | 'LogOptions', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AccessOptions' | 'AuthOptions' | 'CaptchaOptions' | 'LimitOptions' | 'LogOptions' | 'ModelOptions', ParentType, ContextType>;
   enabled?: Resolver<IResolversTypes['Boolean'], ParentType, ContextType>;
 };
 
 export type IEnabledMeybeResolvers<ContextType = any, ParentType extends IResolversParentTypes['EnabledMeybe'] = IResolversParentTypes['EnabledMeybe']> = {
-  __resolveType: TypeResolveFn<'AccessOptionsInput', ParentType, ContextType>;
+  __resolveType: TypeResolveFn<'AccessOptionsInput' | 'AuthOptionsInput' | 'CaptchaOptionsInput' | 'LimitOptionsInput' | 'LogOptionsInput' | 'ModelOptionsInput', ParentType, ContextType>;
   enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
 };
 
@@ -639,25 +676,33 @@ export type ILimitOptionsResolvers<ContextType = any, ParentType extends IResolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ILogOptionsResolvers<ContextType = any, ParentType extends IResolversParentTypes['LogOptions'] = IResolversParentTypes['LogOptions']> = {
-  enabled?: Resolver<IResolversTypes['Boolean'], ParentType, ContextType>;
+export type ILimitOptionsInputResolvers<ContextType = any, ParentType extends IResolversParentTypes['LimitOptionsInput'] = IResolversParentTypes['LimitOptionsInput']> = {
+  enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
+  limitInterval?: Resolver<IResolversTypes['String'], ParentType, ContextType>;
+  limitTreshold?: Resolver<IResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
-export type ILogOptionsDocumentResolvers<ContextType = any, ParentType extends IResolversParentTypes['LogOptionsDocument'] = IResolversParentTypes['LogOptionsDocument']> = {
-  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
+export type ILogOptionsResolvers<ContextType = any, ParentType extends IResolversParentTypes['LogOptions'] = IResolversParentTypes['LogOptions']> = {
   enabled?: Resolver<IResolversTypes['Boolean'], ParentType, ContextType>;
-  max?: Resolver<IResolversTypes['Int'], ParentType, ContextType>;
+  max?: Resolver<Maybe<IResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type ILogOptionsInputResolvers<ContextType = any, ParentType extends IResolversParentTypes['LogOptionsInput'] = IResolversParentTypes['LogOptionsInput']> = {
-  __resolveType: TypeResolveFn<null, ParentType, ContextType>;
   enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
   max?: Resolver<Maybe<IResolversTypes['Int']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type IModelOptionsResolvers<ContextType = any, ParentType extends IResolversParentTypes['ModelOptions'] = IResolversParentTypes['ModelOptions']> = {
   enabled?: Resolver<IResolversTypes['Boolean'], ParentType, ContextType>;
+  mongoose?: Resolver<Maybe<IResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type IModelOptionsInputResolvers<ContextType = any, ParentType extends IResolversParentTypes['ModelOptionsInput'] = IResolversParentTypes['ModelOptionsInput']> = {
+  enabled?: Resolver<Maybe<IResolversTypes['Boolean']>, ParentType, ContextType>;
   mongoose?: Resolver<Maybe<IResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -795,16 +840,19 @@ export type IResolvers<ContextType = any> = {
   AdminOptions?: IAdminOptionsResolvers<ContextType>;
   AdminOptionsInput?: IAdminOptionsInputResolvers<ContextType>;
   AuthOptions?: IAuthOptionsResolvers<ContextType>;
+  AuthOptionsInput?: IAuthOptionsInputResolvers<ContextType>;
   CaptchaOptions?: ICaptchaOptionsResolvers<ContextType>;
+  CaptchaOptionsInput?: ICaptchaOptionsInputResolvers<ContextType>;
   DateTime?: GraphQLScalarType;
   DefaultAccessOptions?: IDefaultAccessOptionsResolvers<ContextType>;
   Enabled?: IEnabledResolvers<ContextType>;
   EnabledMeybe?: IEnabledMeybeResolvers<ContextType>;
   LimitOptions?: ILimitOptionsResolvers<ContextType>;
+  LimitOptionsInput?: ILimitOptionsInputResolvers<ContextType>;
   LogOptions?: ILogOptionsResolvers<ContextType>;
-  LogOptionsDocument?: ILogOptionsDocumentResolvers<ContextType>;
   LogOptionsInput?: ILogOptionsInputResolvers<ContextType>;
   ModelOptions?: IModelOptionsResolvers<ContextType>;
+  ModelOptionsInput?: IModelOptionsInputResolvers<ContextType>;
   MongoId?: IMongoIdResolvers<ContextType>;
   MongoIdMeybe?: IMongoIdMeybeResolvers<ContextType>;
   MongoStream?: IMongoStreamResolvers<ContextType>;

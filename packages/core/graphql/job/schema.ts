@@ -29,7 +29,7 @@ export const JobDocument = `
     # defaults
     time_zone: String! # default: "UTC"
     run_on_startup: Boolean! # default: false
-    log: LogOptionsDocument!
+    log: LogOptions!
 `
 
 export const JobActionInput = `

@@ -1,3 +1,5 @@
+import { AccessConfigInput } from "@ts.app/core/common/cli/typedefs.js";
+
 export default {
     "Country": {
         "getCountry": {},
@@ -18,7 +20,7 @@ export default {
                 "User is redirected to external apps callback",
                 "External app can retreive token by using tokenAuthorizationCode"
             ],
-            "`auth": { "tokens": ["Bearer"] }
+            "auth": { "tokens": ["Bearer"] }
         },
         "authorize": {
             "info": [
@@ -175,4 +177,4 @@ export default {
             "permission": "Write"
         }
     }
-}
+} satisfies AccessConfigInput

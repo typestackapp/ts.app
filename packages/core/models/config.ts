@@ -1,13 +1,13 @@
 import { Schema, Document } from 'mongoose'
 import tscore, { type IConfigInput, type IConfigDocument, type IConfigBase  } from '@ts.app/core'
-import { LogOptionsDocument, logOptionsSchema } from '@ts.app/core/models/log.js'
+import { LogOptions, logOptionsSchema } from '@ts.app/core/models/log.js'
 import { MongooseDocument } from "@ts.app/core/models/util.js"
 
 export type ConfigInput = IConfigInput
 export type ConfigBase = IConfigBase
 
 export type ConfigDocument = MongooseDocument & IConfigDocument & {
-    log: LogOptionsDocument
+    log: LogOptions
 }
 
 const configSchema = new Schema<ConfigDocument>({

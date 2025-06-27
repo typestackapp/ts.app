@@ -77,7 +77,7 @@ export function getDefaultOpts(options: IAccessOptionsInput, pack: string, resou
         }),
         log: getDefault({
             ...options?.log,
-            enabled: options?.log?.enabled != undefined ? options.log.enabled : true
+            enabled: options?.log?.enabled != undefined ? options.log.enabled : true,
         }, {}) || { enabled: true },
         model: getDefault(options.model, {}),
         captcha: getDefault(options.captcha, {}),
