@@ -308,7 +308,7 @@ export class TypeStack {
         let dir = process.cwd()
 
         // if env var exists use it TS_ENTRY_POINT
-        if(tsapp.env.TS_ENTRY_POINT && tsapp.env.TS_ENTRY_POINT !== '') {
+        if(tsapp.try?.TS_ENTRY_POINT && tsapp.try.TS_ENTRY_POINT !== '') {
             dir = tsapp.env.TS_ENTRY_POINT
         }
 

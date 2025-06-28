@@ -70,7 +70,7 @@ export class ENV<T extends ZodEnvObject> {
         return this.zod.parse(this.filter(process.env));
     }
 
-    public get get(): zod.infer<zod.ZodObject<T>> | undefined {
+    public get try(): zod.infer<zod.ZodObject<T>> | undefined {
         try {
             return this.env
         } catch {

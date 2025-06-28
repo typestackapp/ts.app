@@ -5,14 +5,14 @@ export default {
     "mongoose": {
         "core": {
             "conn": {
-                "host": `mongodb://${mongo.get?.MONGO_HOST || 'core.mongo:27017'}/${mongo.get?.MONGO_DB_NAME || 'tsapp'}`,
+                "host": `mongodb://${mongo.try?.MONGO_HOST || 'core.mongo:27017'}/${mongo.try?.MONGO_DB_NAME || 'tsapp'}`,
                 "options": {
                     "auth": {
-                        "username": mongo.get?.MONGO_USERNAME || 'root',
-                        "password": mongo.get?.MONGO_PASSWORD || 'root-psw'
+                        "username": mongo.try?.MONGO_USERNAME || 'root',
+                        "password": mongo.try?.MONGO_PASSWORD || 'root-psw'
                     },
                     "authSource": "admin",
-                    "replicaSet": mongo.get?.MONGO_DB_NAME || 'tsapp',
+                    "replicaSet": mongo.try?.MONGO_DB_NAME || 'tsapp',
                 }
             }
         }

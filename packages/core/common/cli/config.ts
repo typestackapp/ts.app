@@ -30,9 +30,9 @@ export const config = async (options: ConfigOptions) => {
     const entry = ts.entrypoint
     const link = options.link
 
+    // ----------------- BACKUP --------------------
     const appdata = `${cwd.typestack}/appdata`
     const output_folder_tmp = `${cwd.typestack}/tmp/${moment().format('YYYY-MM-DD-HH-mm-ss')}`
-
     if(!cwd) throw new Error("Missing cwd in options")
 
     console.log(`Using packages: ${Object.keys(packages).join(', ')}`)
@@ -53,63 +53,10 @@ export const config = async (options: ConfigOptions) => {
             console.error(chalk.red(`Error while copying appdata to ${output_folder_tmp}`))
         }
     }
-    
     console.log(`Config backup created in ${output_folder_tmp}`)
 
-    // @deprecated in favor of typestack.ts file
-    // -------------------- CONFIG --------------------
-    // create config file in /codegen/config.ts
-    // for(const [pack_key, pack] of Object.entries(config.packages)) {
-    //     // find config files
-    //     const config_folder = `${cwd.node_modules}/${pack.name}/configs`
-    //     if(!fs.existsSync(config_folder) || fs.readdirSync(config_folder).length === 0) continue
-    //     const config_files = fs.readdirSync(config_folder)
-    //     const config_rewrite_files: {[pack_key: string]: {}} = {}
-    // }
 
-    // create config rewrite files
-    // const config_output_folder = `${appdata}/config`
-    // const custom_config_text = '\n/**---------------- place your custom config below ----------------*/\n'
-    // for(const [pack_key, pack] of Object.entries(config.packages)) {
-    //     // read all files in package/config
-    //     const config_folder = `${cwd.node_modules}/${pack_key}/configs`
-    //     if(!fs.existsSync(config_folder) || fs.readdirSync(config_folder).length === 0) continue
-    //     const config_files = fs.readdirSync(config_folder)
-    //     const config_rewrite_files: {[pack_key: string]: {}} = {}
-
-    //     let rewrite_template = ''
-    //     for(const config_file of config_files) {
-    //         if(config_file == 'env.ts') continue
-    //         const config_file_name = config_file.replace('.ts', '')
-    //         const config_file_content = await import(`${pack_key}/configs/${config_file_name}.js`)
-    //         for(const [key, value] of Object.entries(config_file_content)) {
-    //             if(!config_rewrite_files[pack_key]) config_rewrite_files[pack_key] = {}
-    //             config_rewrite_files[pack_key][config_file_name] = value
-    //         }
-    //         rewrite_template += 'import '+config_file_name+' from "'+pack_key+'/configs/'+config_file_name+'.js";\n'
-    //     }
-
-    //     // create file if not exists
-    //     const config_output_file = config_output_folder+'/'+pack.alias+'.ts'
-    //     rewrite_template+='\nexport default { '+Object.keys(config_rewrite_files[pack_key] || {}).join(', ')+' }\n'
-    //     rewrite_template+= custom_config_text
-
-    //     // update existing file
-    //     if(fs.existsSync(config_output_file)) {
-    //         // find custom config
-    //         const custom_config = fs.readFileSync(config_output_file, 'utf8')
-    //         // split by custom config text
-    //         const custom_config_parts = custom_config.split(custom_config_text)
-    //         rewrite_template+=custom_config_parts[1] || ""
-    //     }
-
-    //     // create output folder if not exists
-    //     !fs.existsSync(config_output_folder) && fs.mkdirSync(config_output_folder, { recursive:true })
-    //     fs.writeFileSync(config_output_file, rewrite_template)
-    // }
-
-
-    // ---------------- DOCKER / ENV --------------------
+    // ---------------- ENV --------------------
     // read all env modules
     const env_modules: {
         key: string,
@@ -158,6 +105,7 @@ export const config = async (options: ConfigOptions) => {
         }
     }
 
+    // ---------------- DOCKER --------------------
     // read all docker templates
     const docker_template_files: {
         [pack_name: string]: {
@@ -215,8 +163,6 @@ export const config = async (options: ConfigOptions) => {
             nametag: `${env_file_alias}${env_file_tag? `.${env_file_tag}`: ''}`,
         })
     }
-
-
 
     // prepare env_files
     // create global env file named .env
@@ -316,7 +262,7 @@ export const config = async (options: ConfigOptions) => {
             "@COMPOSE_PROJECT_NAME": entry.alias, // compose project name
         }
 
-        function getOutputFileName(input_file_name: string, keys: string[]){
+        function getOutputFileName(input_file_name: string, keys: string[]) {
             // split input file name by .
             const file_parts = input_file_name.split('.')
             // push extra keys into second position
