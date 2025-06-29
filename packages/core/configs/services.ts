@@ -18,8 +18,8 @@ export default {
         ]
     },
     "templates": {
-        "run": "pm2 start --exp-backoff-restart-delay 100 --watch-delay 0.2 --name ${name} -e /dev/null -o /dev/null ${args} ${script}",
-        "watch": "pm2 start --exp-backoff-restart-delay 100 --watch-delay 0.2 --name ${name} -e /dev/null -o /dev/null --watch '${@ROOT}/packages/*/dist/esm/tsconfig.tsbuildinfo' ${args} ${script}"
+        "run": "pm2 start --exp-backoff-restart-delay 100 --name ${name} -e /dev/null -o /dev/null ${args} ${script}",
+        "watch": "pm2 start --exp-backoff-restart-delay 100 --name ${name} -e /dev/null -o /dev/null --watch '${@ROOT}/packages/*/dist/esm/tsconfig.tsbuildinfo' ${args} ${script}"
     },
     "services": {
         "next": {
@@ -27,7 +27,7 @@ export default {
         },
         "next-dev": {
             "script": "${@PACKAGE}/dist/esm/common/service/next.js",
-            "args": " --watch '${@ROOT}/packages/*/dist/esm/configs/*.js' --watch '${@PACKAGE}/dist/esm/common/service/next.js'"
+            "args": "--watch-delay 1 --watch '${@ROOT}/packages/*/dist/esm/configs/*.js' --watch '${@PACKAGE}/dist/esm/common/service/next.js'"
         },
         "express": {
             "script": "${@PACKAGE}/dist/esm/common/service/express.js",
