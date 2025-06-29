@@ -44,7 +44,6 @@
     "appdata/next/.next"
   ],
   "dependencies": {
-    "@ts.app/core": "^0.0.16",
-    "@ts.app/wireguard": "^0.0.5"
+    "@ts.app/core": "^0.0.16"
   }
 }

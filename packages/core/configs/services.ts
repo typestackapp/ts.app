@@ -18,12 +18,16 @@ export default {
         ]
     },
     "templates": {
-        "run": "pm2 start --exp-backoff-restart-delay 100 --name ${name} -e /dev/null -o /dev/null ${args} ${script}",
-        "watch": "pm2 start --exp-backoff-restart-delay 100 --watch-delay 0.4 --name ${name} -e /dev/null -o /dev/null --watch '${@ROOT}/packages/*/dist/esm/tsconfig.tsbuildinfo' ${args} ${script}"
+        "run": "pm2 start --exp-backoff-restart-delay 100 --watch-delay 0.2 --name ${name} -e /dev/null -o /dev/null ${args} ${script}",
+        "watch": "pm2 start --exp-backoff-restart-delay 100 --watch-delay 0.2 --name ${name} -e /dev/null -o /dev/null --watch '${@ROOT}/packages/*/dist/esm/tsconfig.tsbuildinfo' ${args} ${script}"
     },
     "services": {
         "next": {
             "script": "${@PACKAGE}/dist/esm/common/service/next.js",
+        },
+        "next-dev": {
+            "script": "${@PACKAGE}/dist/esm/common/service/next.js",
+            "args": " --watch '${@ROOT}/packages/*/dist/esm/configs/*.js' --watch '${@PACKAGE}/dist/esm/common/service/next.js'"
         },
         "express": {
             "script": "${@PACKAGE}/dist/esm/common/service/express.js",
@@ -36,10 +40,6 @@ export default {
         },
         "consumers": {
             "script": "${@PACKAGE}/dist/esm/common/service/consumers.js",
-        },
-        "next-dev": {
-            "script": "${@PACKAGE}/dist/esm/common/service/next.js",
-            "args": " --watch '${@ROOT}/packages/*/dist/esm/configs/*.js' --watch '${@PACKAGE}/dist/esm/common/service/next.js'"
         },
     }
 } satisfies ServiceConfigInput
