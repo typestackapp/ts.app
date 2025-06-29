@@ -1,5 +1,6 @@
 import { exec } from "child_process"
 import { CWD, TypeStack } from "@ts.app/core/common/cli/typestack.js"
+import path from "path"
 
 export type ServiceOptions = {
     cwd: CWD // current working directory
@@ -12,9 +13,12 @@ export type ServiceOptions = {
 
 export const service = async (options: ServiceOptions) => {
     const cwd = options.cwd
+    const root_full_path = cwd.workspace || cwd.typestack
+
     if(!options.up) throw `Error, missing start or up option`
     if(typeof options.env != 'string') throw `Error, missing env option`
     if(!['prod', 'dev', 'stage'].includes(options.env)) console.log(`Warning, env should be one of prod, dev, stage`)
+    if(!root_full_path) throw `Error, root path not found in cwd: ${JSON.stringify(cwd)}`
     
     const config = await TypeStack.getConfig()
     const env = options.env
@@ -42,20 +46,25 @@ export const service = async (options: ServiceOptions) => {
             const run_before = service.run_before
             const service_env_vars = service.e
 
+            // check if service exists under services
+            if(!services[service_name]) throw `Error, service ${service_name} not found in ${pack_key} package services`
+
             // prepare commands
             const template = templates[template_name]
             const script = services[service_name].script
             const service_args = services[service_name].args
             const env_vars = { ...process.env, ...service_env_vars }
+            const root_path = path.relative(process.cwd(), root_full_path)
 
             var command = run_before ? `${run_before} && ` : ''
             command += template
                 .replaceAll('${name}', process_name)
                 .replaceAll('${script}', script)
-                .replaceAll('${args}', service_args)
-                .replaceAll('@PACKAGE', `${cwd.node_modules}/${pack.pack.json.name}`)
+                .replaceAll('${args}', service_args || '')
+                .replaceAll('${@PACKAGE}', `${cwd.node_modules}/${pack.pack.json.name}`)
+                .replaceAll('${@ROOT}', root_path)
             
-            console.log(`Starting ${process_name} server in ${env} enviroment`)
+            console.log(`Starting ${process_name} server in ${env} enviroment, cwd: ${process.cwd()}`)
             console.log(`Enviroment variables: ${JSON.stringify(env_vars)}`)
             console.log(`Command: ${command}`)
             
@@ -65,7 +74,7 @@ export const service = async (options: ServiceOptions) => {
     }
 }
 
-function execAsync(command: string, env_vars: any){
+function execAsync(command: string, env_vars: any) {
     return new Promise((resolve, reject) => {
         exec(command, { env: env_vars }, (error, stdout, stderr) => {
             if (error) {

@@ -50,7 +50,7 @@ export interface ServiceConfigInput {
     services: {
         [key: string]: {
             script: string;
-            args: string;
+            args?: string;
         };
     };
 }

@@ -13,11 +13,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
-type Documents = {
-    "#graphql\n    query getPingInComponent {\n        getPing\n    }\n": typeof types.GetPingInComponentDocument,
-    "\n    query getPingInSchema($ping: String!) {\n        getPing\n    }\n": typeof types.GetPingInSchemaDocument,
-};
-const documents: Documents = {
+const documents = {
     "#graphql\n    query getPingInComponent {\n        getPing\n    }\n": types.GetPingInComponentDocument,
     "\n    query getPingInSchema($ping: String!) {\n        getPing\n    }\n": types.GetPingInSchemaDocument,
 };
