@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { getAdminData, useQuery } from '@ts.app/core/components/queries'
+import { getAdminData, useQuery } from '@ts.app/core/components/queries.js'
 import { LogoutBtn } from '@ts.app/core/components/util.js'
 
 export default function Account() {

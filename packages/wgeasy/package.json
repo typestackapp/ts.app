@@ -23,14 +23,6 @@
     "./*": {
       "types": "./dist/types/*",
       "import": "./dist/esm/*"
-    },
-    "./codegen/*": {
-      "types": "./codegen/*",
-      "import": "./codegen/*"
-    },
-    "./appdata/*": {
-      "types": "./appdata/*",
-      "import": "./appdata/*"
     }
   },
   "files": [

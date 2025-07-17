@@ -457,7 +457,7 @@ export const config = async (options: ConfigOptions) => {
     // create layout.tsx    
     if(fs.existsSync(`${next_output_dir}/${next_admin_path}`)) {
         const layout = fs.readFileSync(`${cwd.node_modules}/@ts.app/core/static/next.admin.layout.tpl.tsx`, 'utf8')
-        fs.writeFileSync(`${next_output_dir}/${next_admin_path}/layout.tsx`, layout.replace('${@PACKAGE}', entry.pack.json.name))
+        fs.writeFileSync(`${next_output_dir}/${next_admin_path}/layout.tsx`, layout.replaceAll('${@PACKAGE}', entry.pack.json.name))
     }
 
     // create page.tsx
@@ -467,7 +467,7 @@ export const config = async (options: ConfigOptions) => {
     }
 
     // ------------------- NEXT APPS -------------------
-    const next_apps_output_file = `${appdata}/next/apps.tsx`
+    const next_apps_output_file = `${cwd.typestack}/next/apps.tsx`
     const next_apps_config: AppConfigInput[] = []
     for (const [pack_key, pack] of Object.entries(packages)) {
         // check if access file exists

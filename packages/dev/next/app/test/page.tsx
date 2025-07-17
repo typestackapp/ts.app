@@ -1,8 +1,8 @@
 'use client'
-import '@ts.app/dev/next/public/dev.css'
+// import '@ts.app/dev/next/public/dev.css'
 
 import React from 'react'
-import { context } from '@ts.app/core/components/global'
+import { context } from '@ts.app/core/components/global.js'
 import { ApolloProvider } from "@apollo/client"
 
 // test page is Accessible in:

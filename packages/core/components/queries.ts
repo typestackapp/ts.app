@@ -1,5 +1,5 @@
-import { graphql } from "@ts.app/core/codegen/admin/client/index.js"
-import * as client from "@ts.app/core/codegen/admin/client/graphql.js"
+import { graphql } from "@ts.app/core/codegen/admin/client/index"
+import * as client from "@ts.app/core/codegen/admin/client/graphql"
 import { useQuery } from "@apollo/client"
 export { client }
 export { useQuery }
