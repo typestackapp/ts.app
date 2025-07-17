@@ -10,7 +10,7 @@ export default function AdminLayoutContext({ children, apps }: {
 }) {
   const ctx = React.useContext(context)
   return <context.Provider value={ctx}>
-    <ApolloProvider client={ctx.tsappClient.graphql["@ts.app/core"].admin}>
+    <ApolloProvider client={ctx.tsappClient.graphql.admin}>
       <AdminLayout children={children} apps={apps}/>
     </ApolloProvider>
   </context.Provider>
