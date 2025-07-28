@@ -1,5 +1,5 @@
 services:
-  ${@NAMETAG}_server:
+  ${@NAMETAG}:
     image: linuxserver/wireguard
     restart: always
     cap_add:

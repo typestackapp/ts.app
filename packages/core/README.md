@@ -17,12 +17,12 @@ ts config
 
 ###  Start docker containers
 ```bash
-docker-compose -f ./appdata/compose/compose.core.app.yml up -d
+docker-compose -f ./appdata/compose/compose.core.yml up -d
 ```
 
 ### Update and restart services
 ```bash
-docker-compose -f ./appdata/compose/compose.core.tsapp.yml exec tsapp /bin/bash
+docker-compose -f ./appdata/compose/compose.core.yml exec core /bin/bash
 cd /ts
 ts update
 pm2 ls

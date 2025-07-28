@@ -1,5 +1,16 @@
+version: '3.3'
+networks:
+  ts_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: ${TS_SUBNET}
+volumes:
+  ${@NAMETAG}.mongo:
+  ${@NAMETAG}.rabbitmq:
 services:
-  ${@NAMETAG}.app:
+  ${@NAMETAG}:
     depends_on:
       - ${@NAMETAG}.mongo
       - ${@NAMETAG}.rabbitmq
@@ -30,6 +41,7 @@ services:
       MONGO_BIND_IP: ${MONGO_BIND_IP}
       MONGO_DB_PATH: ${MONGO_DB_PATH}
     networks:
+      default:
       ts_net:
         ipv4_address: ${MONGO_IP}
     volumes:
