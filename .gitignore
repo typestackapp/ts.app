@@ -10,6 +10,7 @@ package-lock.json
 !packages/logship
 !packages/grafana
 !packages/wgeasy
+!packages/n8n
 
 # JAVA projects
 HELP.md

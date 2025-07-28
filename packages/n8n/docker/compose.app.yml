@@ -1,0 +1,18 @@
+volumes:
+  ${@NAMETAG}:
+    driver: local
+
+services:
+  ${@NAMETAG}:
+    image: n8nio/n8n:1.105.0
+    restart: always
+    environment:
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_DATABASE=${BI_POSTGRES_DATABASE}
+      - DB_POSTGRESDB_HOST=${BI_POSTGRES_HOST}
+      - DB_POSTGRESDB_PORT=${BI_POSTGRES_PORT}
+      - DB_POSTGRESDB_USER=${BI_POSTGRES_USER}
+      - DB_POSTGRESDB_SCHEMA=${BI_POSTGRES_SCHEMA}
+      - DB_POSTGRESDB_PASSWORD=${BI_POSTGRES_PASSWORD}
+    volumes:
+      - ${@NAMETAG}:/home/node/.n8n

@@ -17,7 +17,7 @@ ts config
 
 ###  Start docker containers
 ```bash
-docker-compose -f ./appdata/compose/compose.core.tsapp.yml up -d
+docker-compose -f ./appdata/compose/compose.core.app.yml up -d
 ```
 
 ### Update and restart services
