@@ -1,7 +1,5 @@
 #!/bin/sh
-echo "--------------------------------------"
-echo "--------------HAPROXY-----------------"
-echo "--------------------------------------"
+echo "[START] started haproxy at: $(date)"
 
 FULLCHAIN="/home/ssl/"${CERTBOT_DOMAIN}"/fullchain.pem"
 CONFIG_FILE="/usr/local/etc/haproxy/haproxy.cfg"
@@ -9,7 +7,7 @@ CONFIG_FILE="/usr/local/etc/haproxy/haproxy.cfg"
 while true; do
     # Check if the fullchain file exists
     if [ ! -f "$FULLCHAIN" ]; then
-        echo "[HAPROXY] ERROR: Fullchain file $FULLCHAIN does not exist."
+        echo "[ERROR] Fullchain file $FULLCHAIN does not exist."
         # Sleep before retrying
         sleep 5 
         continue
@@ -17,7 +15,7 @@ while true; do
 
     # Validate FULLCHAIN certificate
     if ! openssl x509 -in "$FULLCHAIN" -noout -text > /dev/null 2>&1; then
-        echo "[HAPROXY] ERROR: Fullchain file $FULLCHAIN is not a valid certificate."
+        echo "[ERROR] Fullchain file $FULLCHAIN is not a valid certificate."
         # Sleep before retrying
         sleep 5 
         continue
@@ -26,7 +24,7 @@ while true; do
     # Validate configuration
     haproxy -c -f "$CONFIG_FILE"
     if [ $? -ne 0 ]; then
-        echo "[HAPROXY] ERROR Configuration file is invalid."
+        echo "[ERROR] Configuration file is invalid."
 
         # Sleep before retrying
         sleep 15 
@@ -37,10 +35,10 @@ while true; do
     PID=$(set -- $(pidof haproxy); echo $1)
 
     if [ -n "$PID" ]; then
-        echo "[HAPROXY] INFO: Reloading HAProxy with PID $PID"
+        echo "[INFO] Reloading HAProxy with PID $PID at $(date)"
         haproxy -f "$CONFIG_FILE" -sf $PID
     else
-        echo "[HAPROXY] INFO: Starting HAProxy (no running process found)"
+        echo "[INFO] Starting HAProxy (no running process found) at $(date)"
         haproxy -f "$CONFIG_FILE"
     fi
 
