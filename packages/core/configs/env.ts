@@ -44,13 +44,11 @@ export const haproxy = new ENV(
     {
         HAPROXY_IP: zod.string().ip(),
         HAPROXY_PORT: zod.string(),
-        HAPROXY_STATS_AUTH: zod.string(),
         HAPROXY_MAXCONN: zod.string()
     },
     {
         HAPROXY_IP: "10.44.44.41",
-        HAPROXY_PORT: '["7443:7443", "7444:7444", "7445:8404"]',
-        HAPROXY_STATS_AUTH: "haproxy:root-psw",
+        HAPROXY_PORT: '["7443:7443", "7444:7444"]',
         HAPROXY_MAXCONN: "2048"
     },
     {

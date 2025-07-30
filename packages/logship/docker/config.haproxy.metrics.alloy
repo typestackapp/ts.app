@@ -1,0 +1,39 @@
+prometheus.scrape "haproxy_metrics" {
+  scrape_interval = "10s"
+	targets    = discovery.relabel.haproxy_metrics.output
+	forward_to = [prometheus.remote_write.local.receiver]
+  basic_auth {
+    username = sys.env("LOGSHIP_USERNAME")
+    password = sys.env("LOGSHIP_PASSWORD")
+  }
+}
+
+discovery.relabel "system_labels" {
+  targets = [{
+		__address__ = "https://" + sys.env("LOGSHIP_HOST") + ":" + sys.env("LOGSHIP_PORT"),
+	}]
+
+  rule {
+    action       = "replace"
+    target_label = "type"
+    replacement  = "haproxy_metrics"
+  }
+  rule {
+    action       = "replace"
+    target_label = "source"
+    replacement  = sys.env("LOGSHIP_SOURCE")
+  }
+}
+
+prometheus.remote_write "local" {
+  endpoint {
+    url = "https://" + sys.env("LOGSHIP_HOST") + ":" + sys.env("LOGSHIP_PORT") + "/prometheus/api/v1/write"
+    basic_auth {
+      username = sys.env("LOGSHIP_USERNAME")
+      password = sys.env("LOGSHIP_PASSWORD")
+    }
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+}

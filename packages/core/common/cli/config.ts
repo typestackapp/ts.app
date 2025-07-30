@@ -45,16 +45,15 @@ export const config = async (options: ConfigOptions) => {
     // copyRecursiveSync(appdata, output_folder_tmp) // copy all contents of appdata to tmp folder
     // run cli comand to copy all files
     try {
-        exec(`sudo cp -r ${appdata} ${output_folder_tmp}`)
-    } catch (error) {
-        try {
-            exec(`cp -r ${appdata} ${output_folder_tmp}`)
-        } catch (error) {
-            console.error(chalk.red(`Error while copying appdata to ${output_folder_tmp}`))
+        // check if env is dev
+        const tsapp = (await import('@ts.app/core/configs/env.js')).tsapp
+        if(tsapp.try?.TS_ENV_TYPE === 'prod') {
+            exec(`sudo cp -r ${appdata} ${output_folder_tmp}`)
+            console.log(chalk.green(`Config backup created in ${output_folder_tmp}`))
         }
+    } catch (error) {
+        console.error(chalk.red(`Error while copying appdata to ${output_folder_tmp}`))
     }
-    console.log(`Config backup created in ${output_folder_tmp}`)
-
 
     // ---------------- ENV --------------------
     // read all env modules
@@ -75,7 +74,7 @@ export const config = async (options: ConfigOptions) => {
             if(fs.existsSync(`${cwd.node_modules}/${pack_name}/configs/env.js`)) {
                 console.error(chalk.red(`Error while loading env vars in packages/${pack_alias} error: ${error}`))
             }else{
-                console.warn(chalk.yellow(`Warning: No env module found for ${pack_name}`))
+                // console.warn(chalk.yellow(`Warning: No env module found for ${pack_name}`))
                 env_modules.push({
                     key: pack_name,
                     pack: pack,
@@ -237,7 +236,7 @@ export const config = async (options: ConfigOptions) => {
         }
         const docker_files = docker_template_files[pack.pack.json.name]
         if(!docker_files) {
-            console.error(chalk.red(`Error: Could not find docker files for ${pack.pack.json.name}`))
+            // console.error(chalk.red(`Error: Could not find docker files for ${pack.pack.json.name}`))
             continue
         }
         const compose_global = docker_files["compose.global.yml"]
@@ -333,6 +332,13 @@ export const config = async (options: ConfigOptions) => {
             "@APPDATA": `${appdata_path}/docker/${pack.alias}`, // appdata folder for docker package
             "@HOSTNAME": getHost(),
             "@COMPOSE_PROJECT_NAME": entry.alias, // compose project name
+        }
+
+        if(pack.options.haproxy_defaults && haproxy_output_file_content['defaults']) {
+            for(const tpl of pack.options.haproxy_defaults) {
+                haproxy_output_file_content['defaults'] += `${templateReplace(tpl, vars, 'defaults.cfg', `${pack.pack.json.name}/${env.file}`)}\n`
+                // console.log(chalk.green(`Added ${tpl} to defaults.cfg`))
+            }
         }
 
         for(const haproxy_input_file of haproxy_input_files) {

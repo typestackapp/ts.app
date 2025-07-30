@@ -1,0 +1,27 @@
+loki.source.syslog "haproxy_requests" {
+  listener {
+    address  = "0.0.0.0:514"
+    labels   = { component = "loki.source.syslog", protocol = "tcp" }
+  }
+
+  listener {
+    address  = "0.0.0.0:514"
+    protocol = "udp"
+    labels   = { component = "loki.source.syslog", protocol = "udp"}
+  }
+
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.write "default" {
+  endpoint {
+    url = "https://" + sys.env("LOGSHIP_HOST") + ":" + sys.env("LOGSHIP_PORT") + "/loki/api/v1/push"
+    basic_auth {
+      username = sys.env("LOGSHIP_USERNAME")
+      password = sys.env("LOGSHIP_PASSWORD")
+    }
+    tls_config {
+      insecure_skip_verify = true
+    }
+  }
+}

@@ -1,9 +1,41 @@
 services:
+  ${@NAMETAG}.haproxy.requests:
+    image: grafana/alloy:v1.8.1
+    restart: always
+    env_file:
+      - ./.${@ALIAS}.${@NAMETAG}.env
+    volumes:
+      - ./config.${@NAMETAG}.haproxy.requests.alloy:/etc/alloy/config.alloy
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "run"
+      - "--storage.path=/var/lib/alloy/data"
+      - "/etc/alloy/config.alloy"
+
+  ${@NAMETAG}.haproxy.metrics:
+    image: grafana/alloy:v1.8.1
+    restart: always
+    pid: host
+    env_file:
+      - ./.${@ALIAS}.${@NAMETAG}.env
+    volumes:
+      - ./config.${@NAMETAG}.haproxy.metrics.alloy:/etc/alloy/config.alloy
+      - /proc:/proc
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "run"
+      - "--storage.path=/var/lib/alloy/data"
+      - "/etc/alloy/config.alloy"
+      
   ${@NAMETAG}.docker.logs:
     image: grafana/alloy:v1.8.1
     restart: always
     env_file:
-      - ./.${@NAMETAG}.env
+      - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.docker.logs.alloy:/etc/alloy/config.alloy
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
@@ -19,7 +51,7 @@ services:
     restart: always
     pid: host
     env_file:
-      - ./.${@NAMETAG}.env
+      - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.docker.metrics.alloy:/etc/alloy/config.alloy
       - /proc:/proc
@@ -35,7 +67,7 @@ services:
     image: grafana/alloy:v1.8.1
     restart: always
     env_file:
-      - ./.${@NAMETAG}.env
+      - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.system.logs.alloy:/etc/alloy/config.alloy
       - /var/log:/host/var/log:ro
@@ -49,7 +81,7 @@ services:
     pid: host
     restart: always
     env_file:
-      - ./.${@NAMETAG}.env
+      - ./.${@ALIAS}.${@NAMETAG}.env
     volumes:
       - ./config.${@NAMETAG}.system.metrics.alloy:/etc/alloy/config.alloy
       - /proc:/proc

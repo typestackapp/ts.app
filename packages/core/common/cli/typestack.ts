@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url'
 export type TypeStackOptions = {
     enabled: boolean // is package enabled
     haproxy_rewrite: boolean
+    haproxy_defaults?: string[]
     next_disable_alias: boolean
 }
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "[START] started haproxy at: $(date)"
+echo "[START] starting haproxy at: $(date)"
 
 FULLCHAIN="/home/ssl/"${CERTBOT_DOMAIN}"/fullchain.pem"
 CONFIG_FILE="/usr/local/etc/haproxy/haproxy.cfg"
