@@ -3,6 +3,7 @@ import path from 'path'
 import merge from 'lodash.merge'
 import * as crypto from 'crypto'
 import { IAccessOptions, IAccessOptionsInput } from '@ts.app/core'
+import readline from "readline";
 import { TypeStackConfig, CWD, GraphqlServerInput, GraphqlServerOutput, TypeStack, TypeStackPackage, ConfigInput } from '@ts.app/core/common/cli/typestack.js'
 
 type Packages = string
@@ -601,4 +602,22 @@ export function getAdminAppsFile(apps_config: AppConfigInput[]) {
         `import dynamic from 'next/dynamic'`,
         `export const apps = [${apps_config.map(getAdminAppConfig).join(',')}]`
     ].join('\n')
+}
+
+export function cliAsk(question: string, defaultValue?: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+    });
+    return new Promise((resolve) => {
+        rl.question(question, (answer) => {
+            rl.close();
+            const input = answer.trim()
+            if (defaultValue && input === '') {
+                resolve(defaultValue);
+            } else {
+                resolve(input);
+            }
+        });
+    })
 }

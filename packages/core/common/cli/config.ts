@@ -3,16 +3,18 @@ import {
     emptyDir, prepareEnvVars, prepareDockerFile, 
     mkDirRecursive, getSymLink, unlinkFolder,
     linkFolder, AppConfigInput, generateHash,
-    getAdminAppsFile, templateReplace
+    getAdminAppsFile, templateReplace,
+    cliAsk
 } from '@ts.app/core/common/cli/util.js'
-import child_process from 'child_process'
+import { promisify } from "util";
+import { exec as execCb } from "child_process";
 import { getHost, Module } from '@ts.app/core/common/cli/env.js'
 import path from 'path'
 import moment from 'moment'
 import { TypeStack, CWD, TypeStackOutputPackage as Package } from '@ts.app/core/common/cli/typestack.js'
 import chalk from 'chalk'
 
-const exec = child_process.execSync
+const exec = promisify(execCb);
 
 export type ConfigOptions = {
     cwd: CWD
@@ -32,27 +34,20 @@ export const config = async (options: ConfigOptions) => {
 
     // ----------------- BACKUP --------------------
     const appdata = `${cwd.typestack}/appdata`
-    const output_folder_tmp = `${cwd.typestack}/tmp/${moment().format('YYYY-MM-DD-HH-mm-ss')}`
     if(!cwd) throw new Error("Missing cwd in options")
-
     console.log(`Using packages: ${Object.keys(packages).join(', ')}`)
-
     // create appdata folder if not exists
     if(!fs.existsSync(appdata)) fs.mkdirSync(appdata, { recursive:true })
-    // create tmp folder if not exists
-    if(!fs.existsSync(output_folder_tmp)) fs.mkdirSync(output_folder_tmp, { recursive:true })
-    
-    // copyRecursiveSync(appdata, output_folder_tmp) // copy all contents of appdata to tmp folder
-    // run cli comand to copy all files
-    try {
-        // check if env is dev
-        const tsapp = (await import('@ts.app/core/configs/env.js')).tsapp
-        if(tsapp.try?.TS_ENV_TYPE === 'prod') {
-            exec(`sudo cp -r ${appdata} ${output_folder_tmp}`)
-            console.log(chalk.green(`Config backup created in ${output_folder_tmp}`))
+
+    const output_folder_tmp = `${cwd.typestack}/tmp/${moment().format('YYYY-MM-DD-HH-mm-ss')}`
+    const backup_answer = await cliAsk(`Create backup in ${output_folder_tmp}? (Y/n) `, 'y');
+    if (backup_answer.toLowerCase() === "y") {
+        const cmd = `sudo cp -R -- "${appdata}" "${output_folder_tmp}"`;
+        const { stdout, stderr } = await exec(cmd);
+        if (stderr) {
+            console.warn(chalk.yellow(`cp reported warnings: ${stderr}`));
         }
-    } catch (error) {
-        console.error(chalk.red(`Error while copying appdata to ${output_folder_tmp}`))
+        console.log(chalk.green(`Config backup created in ${output_folder_tmp}`));
     }
 
     // ---------------- ENV --------------------
