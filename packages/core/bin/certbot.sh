@@ -44,6 +44,17 @@ echo "DOMAINS="$DOMAINS
 echo "EMAIL="$EMAIL
 echo "--------------------------------------"
 
+# make needed dirs and files
+mkdir -p /etc/nginx/logs
+
+if [ ! -f /etc/nginx/logs/certbot.error.log ]; then
+    touch /etc/nginx/logs/certbot.error.log
+fi
+
+if [ ! -f /etc/nginx/logs/certbot.access.log ]; then
+    touch /etc/nginx/logs/certbot.access.log
+fi
+
 # RENEW CERTBOT CERTS
 while true
 do  
