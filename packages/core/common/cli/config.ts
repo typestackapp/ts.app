@@ -475,6 +475,11 @@ export const config = async (options: ConfigOptions) => {
     // ------------------- NEXT APPS -------------------
     const next_apps_output_file = `${cwd.typestack}/next/apps.tsx`
     const next_apps_config: AppConfigInput[] = []
+
+    // create folder if does not exist
+    if(!fs.existsSync(path.dirname(next_apps_output_file)))
+        fs.mkdirSync(path.dirname(next_apps_output_file), { recursive:true })
+
     for (const [pack_key, pack] of Object.entries(packages)) {
         // check if access file exists
         if(!fs.existsSync(`${cwd.node_modules}/${pack.pack.json.name}/dist/esm/configs/access.js`)) continue
