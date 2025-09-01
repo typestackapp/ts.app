@@ -139,8 +139,8 @@ do
 
         # initialize certbot on first run
         if [ "${CERTBOT_INIT}" = "true" ]; then
-            echo "initializing certbot"
-            eval "certbot certonly \"$CERTBOT_FLAGS\" --webroot --debug-challenges --webroot-path /var/www/wk/ \"$DOMAINS\" \"$EMAIL\" --agree-tos --force-renewal --non-interactive"
+            echo "initializing certbot - certbot certonly $CERTBOT_FLAGS --webroot --debug-challenges --webroot-path /var/www/wk/ $DOMAINS $EMAIL --agree-tos --force-renewal --non-interactive"
+            eval "certbot certonly $CERTBOT_FLAGS --webroot --debug-challenges --webroot-path /var/www/wk/ $DOMAINS $EMAIL --agree-tos --force-renewal --non-interactive"
         fi
 
         # renew certs
