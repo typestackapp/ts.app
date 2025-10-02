@@ -34,12 +34,13 @@ while true; do
     # Get current HAProxy master PID
     PID=$(set -- $(pidof haproxy); echo $1)
 
-    if [ -n "$PID" ]; then
-        echo "[INFO] Reloading HAProxy with PID $PID at $(date)"
-        haproxy -f "$CONFIG_FILE" -sf $PID
+    if pidof haproxy >/dev/null 2>&1; then
+        PID=$(pidof haproxy | awk '{print $1}')
+        echo "[INFO] Reloading HAProxy PID $PID at $(date)"
+        haproxy -f "$CONFIG_FILE" -sf "$PID" &
     else
-        echo "[INFO] Starting HAProxy (no running process found) at $(date)"
-        haproxy -f "$CONFIG_FILE"
+        echo "[INFO] Starting HAProxy at $(date)"
+        haproxy -f "$CONFIG_FILE" &
     fi
 
     sleep $CERTBOT_RESTART_TIME
