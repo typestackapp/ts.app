@@ -31,13 +31,10 @@ while true; do
         continue
     fi
 
-    # Get current HAProxy master PID
-    PID=$(set -- $(pidof haproxy); echo $1)
-
-    if pidof haproxy >/dev/null 2>&1; then
-        PID=$(pidof haproxy | awk '{print $1}')
-        echo "[INFO] Reloading HAProxy PID $PID at $(date)"
-        haproxy -f "$CONFIG_FILE" -sf "$PID" &
+    PIDS="$(pidof haproxy || true)"
+    if [ -n "$PIDS" ]; then
+        echo "[INFO] Reloading HAProxy (old PIDs: $PIDS) at $(date)"
+        haproxy -f "$CONFIG_FILE" -sf $PIDS &
     else
         echo "[INFO] Starting HAProxy at $(date)"
         haproxy -f "$CONFIG_FILE" &
